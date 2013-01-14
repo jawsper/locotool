@@ -17,5 +17,7 @@ if __name__ == '__main__':
 		path = os.path.realpath( '.' )
 	if path != None:
 		for filename in os.listdir( path ):
-			print filename
+			if filename.lower().endswith( '.dat' ):
+				f = LocoFile( filename )
+				print( '{2} class: 0x{0:02X}, subclass: 0x{1:06X}'.format( *f.get_header() ) )
 	pass

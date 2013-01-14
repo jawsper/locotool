@@ -31,6 +31,14 @@ class LocoFile:
 	def __init__( self, filename ):
 		self.filename = os.path.realpath( filename )
 		
+	def get_header( self ):
+		with open( self.filename, 'rb' ) as f:			
+			tmp = f.read( 4 )	
+			_class = struct.unpack( 'B', tmp[0] )[0] & 0x7F
+			_subclass = ( struct.unpack( '<I', tmp )[0] & 0xFFFFFF00 ) >> 8
+			_name = f.read( 8 )
+			return ( _class, _subclass, _name )
+	
 	def get_class( self ):
 		with open( self.filename, 'rb' ) as f:
 			_class = struct.unpack( 'B', f.read( 1 ) )[0]
