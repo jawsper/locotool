@@ -180,40 +180,40 @@ vehdesc = [
 # Array defining object class-specific data structures and descriptions
 #
 objclasses = [
-#	// structure	size auxdef	description
-0,#	{ interfacevars, 24, None,	simpledesc },	// 00 Interfaces
-	objclass( sfxvars,	 12, None,	sfxdesc ),	# 01 Sound effects
-0,#	{ currvars,	 12, None,	currdesc },	// 02 Currencies
-0,#	{ exhfxvars,	 40, exhfxaux,	exhfxdesc },	// 03 Exhaust effects
-0,#	{ simplevars,	  6, None,	simpledesc },	// 04 Cliff faces
-0,#	{ watervars,	 14, None,	simpledesc },	// 05 Water
-0,#	{ groundvars,	 30, None,	grounddesc },	// 06 Ground
-0,#	{ townvars,	 26, None,	towndesc },	// 07 Town names
-0,#	{ cargovars,	 31, None,	cargodesc },	// 08 Cargos
-0,#	{ fencevars,	 10, None,	simpledesc },	// 09 Fences
-0,#	{ signalvars,	 30, None,	signaldesc },	// 0A Signals
-0,#	{ crossingvars,	 18, None,	simpledesc },	// 0B Crossings
-0,#	{ lightvars,	 12, None,	simpledesc },	// 0C Street lights
-0,#	{ simplevars,	  6, None,	simpledesc },	// 0D Tunnels
-0,#	{ bridgevars,	 44, None,	simpledesc },	// 0E Bridges
-0,#	{ trnstatvars,	174, trnstataux,trnstatdesc },	// 0F Train stations
-0,#	{ trkmodvars,	 18, None,	simpledesc },	// 10 Track modifications
-0,#	{ trackvars,	 54, None,	trackdesc },	// 11 Tracks
-0,#	{ roadstvars,	110, roadstaux,	roadstdesc },	// 12 Road stations
-0,#	{ trkmodvars,	 18, None,	simpledesc },	// 13 Road modifications
-0,#	{ roadvars,	 48, None,	roaddesc },	// 14 Roads
-0,#	{ airportvars,	186, airportaux,airportdesc },	// 15 Airports
-0,#	{ dockvars,	 40, dockaux,	dockdesc },	// 16 Docks
-	objclass( vehvars, 350, None, vehdesc ),	# 17 Vehicles
-0,#	{ treevars,	 76, None,	simpledesc },	// 18 Trees
-0,#	{ simplevars,	  6, None,	simpledesc },	// 19 Snow
-0,#	{ climvars,	 10, None,	climdesc },	// 1A Climates
-0,#	{ shapevars,	 14, None,	simpledesc },	// 1B Shapes
-0,#	{ bldngvars,	190, bldngaux,	bldngdesc },	// 1C bldngs
-0,#	{ scaffvars,	 18, None,	simpledesc },	// 1D Scaffolding
-0,#	{ indvars,	244, indaux,	inddesc },	// 1E Industries
-0,#	{ regionvars,	 18, None,	regiondesc },	// 1F Regions
-0,#	{ compvars,	 56, None,	compdesc },	// 20 Companies
-0 #	{ simplevars,	  6, None,	textdesc },	// 21 Texts
+	# structure	size auxdef	description
+	objclass( interfacevars, 24, None, simpledesc ),	# 00 Interfaces
+	objclass( sfxvars,	 	 12, None, sfxdesc ),		# 01 Sound effects
+0,#	objclass( currvars,	 	 12, None, currdesc ),		# 02 Currencies
+0,#	objclass( exhfxvars,	 40, exhfxaux, exhfxdesc ),	# 03 Exhaust effects
+0,#	objclass( simplevars,	  6, None,	simpledesc ),	# 04 Cliff faces
+0,#	objclass( watervars,	 14, None,	simpledesc ),	# 05 Water
+0,#	objclass( groundvars,	 30, None,	grounddesc ),	# 06 Ground
+0,#	objclass( townvars,	 	 26, None,	towndesc ),		# 07 Town names
+0,#	objclass( cargovars,	 31, None,	cargodesc ),	# 08 Cargos
+0,#	objclass( fencevars,	 10, None,	simpledesc ),	# 09 Fences
+0,#	objclass( signalvars,	 30, None,	signaldesc ),	# 0A Signals
+0,#	objclass( crossingvars,	 18, None,	simpledesc ),	# 0B Crossings
+0,#	objclass( lightvars,	 12, None,	simpledesc ),	# 0C Street lights
+0,#	objclass( simplevars,	  6, None,	simpledesc ),	# 0D Tunnels
+0,#	objclass( bridgevars,	 44, None,	simpledesc ),	# 0E Bridges
+0,#	objclass( trnstatvars,	174, trnstataux,trnstatdesc ),	# 0F Train stations
+0,#	objclass( trkmodvars,	 18, None,	simpledesc ),	# 10 Track modifications
+0,#	objclass( trackvars,	 54, None,	trackdesc ),	# 11 Tracks
+0,#	objclass( roadstvars,	110, roadstaux,	roadstdesc ),	# 12 Road stations
+0,#	objclass( trkmodvars,	 18, None,	simpledesc ),	# 13 Road modifications
+0,#	objclass( roadvars,	 	 48, None,	roaddesc ),		# 14 Roads
+0,#	objclass( airportvars,	186, airportaux,airportdesc ),	# 15 Airports
+0,#	objclass( dockvars,	 	 40, dockaux,	dockdesc ),	# 16 Docks
+	objclass( vehvars, 		350, None, vehdesc ),		# 17 Vehicles
+0,#	objclass( treevars,	 	 76, None,	simpledesc ),	# 18 Trees
+0,#	objclass( simplevars,	  6, None,	simpledesc ),	# 19 Snow
+0,#	objclass( climvars,	 	 10, None,	climdesc ),		# 1A Climates
+0,#	objclass( shapevars,	 14, None,	simpledesc ),	# 1B Shapes
+0,#	objclass( bldngvars,	190, bldngaux,	bldngdesc ),# 1C bldngs
+0,#	objclass( scaffvars,	 18, None,	simpledesc ),	# 1D Scaffolding
+0,#	objclass( indvars,		244, indaux,	inddesc ),	# 1E Industries
+0,#	objclass( regionvars,	 18, None,	regiondesc ),	# 1F Regions
+0,#	objclass( compvars,	 	 56, None,	compdesc ),		# 20 Companies
+0 #	objclass( simplevars,	  6, None,	textdesc ),		# 21 Texts
 
 ]
