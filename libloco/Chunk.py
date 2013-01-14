@@ -23,7 +23,7 @@ class Chunk:
 		indent = 1
 		obj = objclasses[ self._class ]
 		dumped = 0
-		if obj  == 0:
+		if obj == 0:
 			die( 'Objclass 0x{0:02X} not implemented yet'.format( self._class ) )
 		for cls in obj.desc:
 			if cls.type == 'desc_objdata':
@@ -217,8 +217,7 @@ class Chunk:
 				pass
 			else:
 				pngname = self.loco.makepngname( i )
-				with open( pngname, 'w' ) as png:
-					spritesize = makepng( png, data[ spritedataoffset + ofs: ], width, height, flags )
+				spritesize = makepng( pngname, data[ spritedataoffset + ofs: ], width, height, flags )
 				self._printxml( 2, '<pngfile>{0}</pngfile>'.format( pngname ) )
 			
 			totalsize += spritesize
@@ -270,4 +269,4 @@ class Chunk:
 		dumped += wavlen
 		
 		return dumped
-	
+
