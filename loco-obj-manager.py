@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from libloco import LocoDecoder
+from libloco import LocoDecoder, LocoEncoder
 
 import sys
 import os
@@ -12,7 +12,8 @@ if __name__ == '__main__':
 			path = os.path.realpath( sys.argv[1] )
 		else:
 			if sys.argv[1].lower().endswith( '.xml' ):
-				pass
+				f = LocoEncoder( sys.argv[1] )
+				f.encode()
 			else:
 				f = LocoDecoder( sys.argv[1] )
 				f.decode()

@@ -2,6 +2,11 @@ import struct
 import os
 
 class LocoFile:
+	filename = None
+		
+	def __init__( self, filename ):
+		self.filename = os.path.realpath( filename )
+	
 	def makefilename( self, ext ):
 		return os.path.relpath( 'j_{0}{1}'.format( self._name.rstrip(), ext ), os.path.dirname( self.filename ) )
 	def makepngname( self, num ):

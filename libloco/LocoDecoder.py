@@ -6,12 +6,8 @@ from objects import objclassnames
 from helper import uint8_t
 
 class LocoDecoder(LocoFile):
-	filename = None
 	xml = None
 	pngbase = None
-		
-	def __init__( self, filename ):
-		self.filename = os.path.realpath( filename )
 		
 	def get_header( self ):
 		with open( self.filename, 'rb' ) as f:
