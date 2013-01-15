@@ -11,7 +11,7 @@ pos_desc_params = 1
 
 class Chunk:
 	allunknown = False
-	onlysetbits = True
+	onlysetbits = False
 
 	def __init__( self, locofile, data ):
 		self.loco = locofile
@@ -74,17 +74,19 @@ class Chunk:
 		
 	# write a bit field
 	def _dumpflags( self, value, flags, size, indent ):
-		for i in range( 0, size * 8 ):
+		if size > 4:
+			die( "Can't dump flags with {0} bytes".format( size ) )
+		
+		for i in range( size * 8 ):
+			defname = None
 			if i < len( flags ):
 				name = flags[ i ]
 			else:
 				name = ""
-			defname = None
 			if len( name ) == 0:
 				name = defname = 'bit_{0:X}'.format( i )
 			state = ( value & ( 1 << i ) ) >> i
-			#print state, defname, name, value, i
-			if ( ( ( not self.onlysetbits ) and ( defname != name ) ) or state != 0 ):
+			if ( ( ( not self.onlysetbits ) and name != defname ) or state ):
 				self._printxml( indent, '<bit name="{0}">{1}</bit>'.format( name, state ) )
 		return size
 		
