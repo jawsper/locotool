@@ -15,7 +15,7 @@ if __name__ == '__main__':
 			if sys.argv[1].lower().endswith( '.xml' ):
 				f.encode()
 			else:
-				f.decode( sys.argv[1] )
+				f.decode()
 	else:
 		path = os.path.realpath( '.' )
 	if path != None:

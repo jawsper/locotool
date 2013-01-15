@@ -49,7 +49,7 @@ class LocoFile:
 	def encode( self ):
 		pass
 		
-	def decode( self, filename ):
+	def decode( self ):
 		with open( self.filename, 'rb' ) as self.f:
 			
 			tmp = self.f.read( 4 )	
