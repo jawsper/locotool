@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from libloco import LocoFile
+from libloco import LocoDecoder
 
 import sys
 import os
