@@ -474,17 +474,17 @@ class Writer:
 
             if c is None:
                 return c
-            if greyscale:
+            if palette or greyscale:
                 try:
                     l = len(c)
                 except TypeError:
                     c = (c,)
                 if len(c) != 1:
-                    raise ValueError("%s for greyscale must be 1-tuple" %
+                    raise ValueError("%s for palette/greyscale must be 1-tuple" %
                         which)
                 if not isinteger(c[0]):
                     raise ValueError(
-                        "%s colour for greyscale must be integer" %
+                        "%s colour for palette/greyscale must be integer" %
                         which)
             else:
                 if not (len(c) == 3 and
@@ -576,8 +576,7 @@ class Writer:
                 "bit depth must be 8 or less for images with palette")
 
         transparent = check_color(transparent, 'transparent')
-        if not palette:
-	        background = check_color(background, 'background')
+        background = check_color(background, 'background')
 
         # It's important that the true boolean values (greyscale, alpha,
         # colormap, interlace) are converted to bool because Iverson's
