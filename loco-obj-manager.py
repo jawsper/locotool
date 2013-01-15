@@ -11,10 +11,10 @@ if __name__ == '__main__':
 		if os.path.isdir( sys.argv[1] ):
 			path = os.path.realpath( sys.argv[1] )
 		else:
-			f = LocoFile( sys.argv[1] )
 			if sys.argv[1].lower().endswith( '.xml' ):
-				f.encode()
+				pass
 			else:
+				f = LocoDecoder( sys.argv[1] )
 				f.decode()
 	else:
 		path = os.path.realpath( '.' )

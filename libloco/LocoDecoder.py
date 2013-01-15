@@ -4,7 +4,7 @@ from .Chunk import Chunk
 from objects import objclassnames
 from helper import uint8_t
 
-class LocoFile:
+class LocoDecoder:
 	filename = None
 	xml = None
 	pngbase = None

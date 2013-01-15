@@ -1,3 +1,3 @@
 from .Chunk import Chunk
-from .LocoFile import LocoFile
+from .LocoDecoder import LocoDecoder
 from .helper import *
