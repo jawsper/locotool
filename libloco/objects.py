@@ -61,7 +61,23 @@ sfxdesc = [
 	objdesc( 'desc_sounds' ),
 ]
 
+# ***********************
+# Class 02:  CURRENCIES
+# ***********************
 
+currvars = [
+	varinf( 0x00, 1, 10, "" ),
+	varinf( 0x0A, 1, 1, "zeroes" ),
+	varinf( 0x0B, 1, 1, "shiftnum" )
+]
+
+currdesc = [
+	objdesc( 'desc_objdata' ),
+	objdesc( 'desc_lang', [ 0 ] ),
+	objdesc( 'desc_lang', [ 1 ] ),
+	objdesc( 'desc_lang', [ 2 ] ),
+	objdesc( 'desc_sprites' ),
+]
 
 
 # ***********************
@@ -183,7 +199,7 @@ objclasses = [
 	# structure	size auxdef	description
 	objclass( interfacevars, 24, None, simpledesc ),	# 00 Interfaces
 	objclass( sfxvars,	 	 12, None, sfxdesc ),		# 01 Sound effects
-0,#	objclass( currvars,	 	 12, None, currdesc ),		# 02 Currencies
+	objclass( currvars,	 	 12, None, currdesc ),		# 02 Currencies
 0,#	objclass( exhfxvars,	 40, exhfxaux, exhfxdesc ),	# 03 Exhaust effects
 0,#	objclass( simplevars,	  6, None,	simpledesc ),	# 04 Cliff faces
 0,#	objclass( watervars,	 14, None,	simpledesc ),	# 05 Water
@@ -216,4 +232,18 @@ objclasses = [
 0,#	objclass( compvars,	 	 56, None,	compdesc ),		# 20 Companies
 0 #	objclass( simplevars,	  6, None,	textdesc ),		# 21 Texts
 
+]
+
+objclassnames = [
+	'Interfaces', 'Sound effects', 'Currencies',
+	'Exhaust effects', 'Cliff faces', 'Water',
+	'Ground', 'Town names',  'Cargos', 'Fences',
+	'Signals', 'Crossings', 'Street lights',
+	'Tunnels', 'Bridges', 'Train stations',
+	'Track modifications', 'Tracks', 'Road stations',
+	'Road modifications', 'Roads', 'Airports',
+	'Docks', 'Vehicles', 'Trees', 
+	'Snow', 'Climates', 'Shapes', 
+	'Buildings', 'Scaffolding', 'Industries',
+	'Regions', 'Companies', 'Texts'
 ]
