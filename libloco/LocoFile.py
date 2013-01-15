@@ -1,17 +1,19 @@
 import struct
 import os
 from .Chunk import Chunk
+from objects import objclassnames
+from helper import uint8_t
 
 class LocoFile:
-	file = None
+	filename = None
 	xml = None
 	pngbase = None
 	
 	def makefilename( self, ext ):
-		return os.path.relpath( 'j_{0}{1}'.format( self._name.rstrip(), ext ), os.path.dirname( self.file ) )
+		return os.path.relpath( 'j_{0}{1}'.format( self._name.rstrip(), ext ), os.path.dirname( self.filename ) )
 	def makepngname( self, num ):
 		pngbase = self.pngbase if self.pngbase != None else 'j_{0}'.format( self._name.rstrip() )
-		pngbase = os.path.relpath( pngbase, os.path.dirname( self.file ) )
+		pngbase = os.path.relpath( pngbase, os.path.dirname( self.filename ) )
 		if not os.path.isdir( pngbase ):
 			os.mkdir( pngbase )
 		return os.path.join( pngbase, '{0:03}.png'.format( num ) )
@@ -32,22 +34,23 @@ class LocoFile:
 		self.filename = os.path.realpath( filename )
 		
 	def get_header( self ):
-		with open( self.filename, 'rb' ) as f:			
-			tmp = f.read( 4 )	
+		with open( self.filename, 'rb' ) as f:
+			tmp = f.read( 4 )
 			_class = struct.unpack( 'B', tmp[0] )[0] & 0x7F
 			_subclass = ( struct.unpack( '<I', tmp )[0] & 0xFFFFFF00 ) >> 8
 			_name = f.read( 8 )
-			return ( _class, _subclass, _name )
+			return ( _class, _subclass, _name, objclassnames[ _class ] )
 	
 	def get_class( self ):
 		with open( self.filename, 'rb' ) as f:
 			_class = struct.unpack( 'B', f.read( 1 ) )[0]
 		return _class
-			
+		
+	def encode( self ):
+		pass
 		
 	def decode( self, filename ):
-		self.file = os.path.realpath( filename )
-		with open( filename, 'rb' ) as self.f:
+		with open( self.filename, 'rb' ) as self.f:
 			
 			tmp = self.f.read( 4 )	
 			self._class = struct.unpack( 'B', tmp[0] )[0]
@@ -77,8 +80,8 @@ class LocoFile:
 			chunk = self.f.read( length )
 		elif compression == 1: # RLE
 			chunk = self.chunk_rle_decode( length )
-		#elif compression == 2: # RLE compresses
-		#	pass
+		elif compression == 2: # RLE compressed
+			chunk = self.chunk_decompress( length )
 		#elif compression == 3: # Scrambled?
 		#	pass
 		else:
@@ -86,6 +89,8 @@ class LocoFile:
 			return False
 		#with open( 'chunk.dat', 'wb' ) as wf:
 		#	wf.write( chunk )
+		if not chunk:
+			raise Exception( 'No chunk!' )
 		chunk = Chunk( self, chunk )
 		chunk.dump()
 		self.xml.write( '</chunk>' )
@@ -107,4 +112,29 @@ class LocoFile:
 				length -= run
 				data = self.f.read( run )
 				chunk += data
+		return chunk
+
+	def chunk_decompress( self, length ):
+		rle = self.chunk_rle_decode( length )
+		#return None
+		chunk = r''
+
+		chunklen = 0
+		rleofs = 0
+		while rleofs < len( rle ):
+		
+			code = uint8_t( rle[ rleofs ] )
+			rleofs += 1
+
+			if code == 0xff:
+				chunk += rle[rleofs]
+				chunklen += 1
+				rleofs += 1
+			else:
+				length = (code & 7) + 1
+				ofs = 32 - ( code >> 3 )
+				for i in range( length ):
+					chunk += chunk[ chunklen - ofs + i ]
+				chunklen += length
+
 		return chunk
