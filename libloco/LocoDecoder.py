@@ -25,25 +25,26 @@ class LocoDecoder(LocoFile):
 	def decode( self ):
 		with open( self.filename, 'rb' ) as self.f:
 			
-			tmp = self.f.read( 4 )	
+			tmp = self.f.read( 4 )
 			self._class = struct.unpack( 'B', tmp[0] )[0]
 			self._subclass = ( struct.unpack( '<I', tmp )[0] & 0xFFFFFF00 ) >> 8
 			self._name = self.f.read( 8 )
-			self.f.read( 4 ) # skip bytes
+			self.f.read( 4 ) # skip checksum
 			
-			self.xml = open( 'j_{0}.xml'.format( self._name ), 'w' )
+			self.xml = open( 'j_{0}.xml'.format( self._name.rstrip() ), 'w' )
 			
 			self.xml.write( '<?xml version="1.0" encoding="ISO-8859-1"?>\n' )
 			self.xml.write( '<object class="0x{0:02X}" subclass="0x{1:06X}" name="{2}">'.format( self._class, self._subclass, self._name ) )
 			
 			self._class &= 0x7F
 			
-			while self.read_chunk():
-				pass
+			i = 0
+			while self.read_chunk( i ):
+				i += 1
 			self.xml.write( '</object>\n' )
 			self.xml.close()
 		
-	def read_chunk( self ):
+	def read_chunk( self, i ):
 		compression = self.read_uint8()
 		if compression == False: # EOF
 			return False
@@ -60,12 +61,13 @@ class LocoDecoder(LocoFile):
 		else:
 			print "Error! Unknown or unsupported compression {0}.".format( compression )
 			return False
-		#with open( 'chunk.dat', 'wb' ) as wf:
+		#print( 'Chunk length: {0}, original length: {1}'.format( len( chunk ), length ) )
+		#with open( 'chunk_{0:X}.dat'.format( i ), 'wb' ) as wf:
 		#	wf.write( chunk )
 		if not chunk:
 			raise Exception( 'No chunk!' )
-		chunk = Chunk( self, chunk )
-		chunk.dump()
+		chunk = Chunk( chunk, self )
+		chunk.decode( self.xml )
 		self.xml.write( '</chunk>' )
 		return True
 		

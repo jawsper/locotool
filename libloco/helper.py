@@ -15,11 +15,27 @@ def a_to_b( a, b, inp ):
 	return struct.unpack( b, struct.pack( a, inp ) )[0]
 def uint8_to_int8( inp ):
 	return a_to_b( 'B', 'b', inp )
+def int8_to_uint8( inp ):
+	return a_to_b( 'b', 'B', inp )
 def uint16_to_int16( inp ):
 	return a_to_b( 'H', 'h', inp )
 	
 def uint8_t( inp ):
 	return struct.unpack( 'B', inp )[0]
+	
+def raw_str_to_uint8_list( raw ):
+	data = []
+	for x in raw:
+		data.append( uint8_t( x ) )
+	return data
+def uint8_list_to_raw_str( lst ):
+	data = r''
+	for x in lst:
+		data += struct.pack( 'B', x )
+	return data
+	
+def xml_hex_to_val( inp ):
+	return inp
 
 def vehnumtrack( data ):
 	return 0 if ( uint8_t( data[2] ) < 2 ) and not ( uint8_t( data[0xE1] ) & 2 ) else -1
@@ -81,3 +97,10 @@ def getvalue( data, ofs, size ):
 		return struct.unpack_from( sizes[ size ].upper(), data, ofs )[0]
 	else:
 		return struct.unpack_from( sizes[ abs( size ) ], data, ofs )[0]
+		
+def encodevalue( raw, size ):
+	sizes = { 1: 'b', 2: '<h', 4: '<i', 8: '<q' }
+	if size > 0:
+		return struct.pack( sizes[ size ].upper(), raw )
+	else:
+		return struct.pack( sizes[ abs( size ) ], raw )

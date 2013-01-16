@@ -1,4 +1,4 @@
-from .helper import getvalue
+from .helper import getvalue, encodevalue
 
 class varinf:
 	ofs = 0
@@ -22,3 +22,5 @@ class varinf:
 		
 	def getvalue( self, data, n = 0 ):
 		return getvalue( data, self.ofs + ( n * self.size ), self.size )
+	def encode( self, raw ):
+		return encodevalue( raw, self.size )

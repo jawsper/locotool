@@ -13,13 +13,14 @@ class Chunk:
 	allunknown = False
 	onlysetbits = False
 
-	def __init__( self, locofile, data ):
-		self.loco = locofile
-		self.xml = locofile.xml
-		self._class = locofile._class
+	def __init__( self, data, locofile = None ):
+		if locofile:
+			self.loco = locofile
+			self._class = locofile._class
 		self.data = data
-
-	def dump( self ):
+		
+	def decode( self, xml ):
+		self.xml = xml
 		indent = 1
 		obj = objclasses[ self._class ]
 		dumped = 0
@@ -100,7 +101,7 @@ class Chunk:
 				fname = 'field_{0:X}'.format( v.ofs )
 			if ofs != v.ofs:
 				die( 'Structure is invalid, ofs={0:X} but next field is {1:X}'.format( ofs, v.ofs ) )
-			for j in range( 0, v.num ):
+			for j in range( v.num ):
 				name = fname
 				if v.num > 1:
 					name = '{0}[{1}]'.format( fname, j )

@@ -28,8 +28,8 @@ def putspriterow( data, data_offset, flags, y, width ):
 		ofs = uint8_t( data[ offset ] )
 		offset += 1
 		
-		for i in range( ofs, ofs + row_len ):
-			row[i] = uint8_t( data[ offset ] )
+		for i in range( row_len ):
+			row[ ofs + i ] = uint8_t( data[ offset ] )
 			offset += 1
 	
 	return ( row, offset )
@@ -42,7 +42,7 @@ def makepng( fname, data, width, height, flags ):
 	png = PNGWriter( fname, width, height )
 	
 	rows = []
-	for y in range( 0, height ):
+	for y in range( height ):
 		( row, offset ) = putspriterow( data, dumped, flags, y, width )
 		if offset > dumped:
 			dumped = offset
