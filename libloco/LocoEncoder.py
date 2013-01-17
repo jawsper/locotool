@@ -247,7 +247,7 @@ class LocoEncoder(LocoFile):
 		
 		if cls.type == 'desc_auxdatavar' and not is_array:
 			data.append( 0xFF )
-		return map( lambda x: 0xFA, data )
+		#return map( lambda x: 0xFA, data )
 		return data
 		
 	def _encode_strtable( self, chunk, id, num_offset ):
