@@ -6,7 +6,7 @@ from .LocoFile import LocoFile
 from helper import uint8_list_to_raw_str, raw_str_to_uint8_list
 from helper import uint8_t, int8_to_uint8, pack
 from objects import *
-from .sprite_png import readpng
+from .sprite_png import readpng, getspriterow
 
 def ROR(x, n, bits = 32):
 	mask = (2L**n) - 1
@@ -245,12 +245,22 @@ class LocoEncoder(LocoFile):
 
 		ofs = 0
 		for c in chunk.findall( 'sprite' ):
-			fname = c.find( 'pngfile' ).text
 			id = c.attrib['id']
 			xofs = int(c.attrib['xofs'])
 			yofs = int(c.attrib['yofs'])
 			flags = self._encode_flags( c.findall( 'bit' ), spriteflags, 4 )
-			( pixels, width, height ) = readpng( fname, flags )
+			
+			if c.find( 'stub' ) != None:
+				width = 1
+				height = 1
+				pixels = []
+				if flags & 4:
+					size = height * 2
+					pixels.extend( pack( '<H', size ) )
+				pixels.extend( getspriterow( [ int( c.find( 'stub' ).text ) ], flags ) )
+			else:
+				fname = c.find( 'pngfile' ).text
+				( pixels, width, height ) = readpng( fname, flags )
 
 			data.extend( pack( '<I', ofs ) ) # ofs
 			data.extend( pack( '<H', width ) ) # width
