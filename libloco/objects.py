@@ -137,7 +137,7 @@ groundvars = [
 grounddesc = [
 	objdesc( 'desc_objdata' ),
 	objdesc( 'desc_lang', [ 0 ] ),
-	objdesc( 'desc_useobj', [ 0, 'ob_cliff', 0x04, -1 ] ),
+	objdesc( 'desc_useobj', [ 0, 'cliff', 0x04, -1 ] ),
 	objdesc( 'desc_sprites' ),
 ]
 
@@ -264,7 +264,7 @@ objclasses = [
 	objclass( exhfxvars,	 40, exhfxaux, exhfxdesc ),	# 03 Exhaust effects
 	objclass( simplevars,	  6, None,	simpledesc ),	# 04 Cliff faces
 	objclass( watervars,	 14, None,	simpledesc ),	# 05 Water
-0,#	objclass( groundvars,	 30, None,	grounddesc ),	# 06 Ground
+	objclass( groundvars,	 30, None,	grounddesc ),	# 06 Ground
 0,#	objclass( townvars,	 	 26, None,	towndesc ),		# 07 Town names
 0,#	objclass( cargovars,	 31, None,	cargodesc ),	# 08 Cargos
 0,#	objclass( fencevars,	 10, None,	simpledesc ),	# 09 Fences
