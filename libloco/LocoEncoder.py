@@ -99,15 +99,17 @@ class LocoEncoder(LocoFile):
 
 			elif cls.type == 'desc_auxdata':
 				print( 'desc_auxdata' )
+				
 			elif cls.type == 'desc_auxdatafix':
 				print( 'desc_auxdatafix' )
+				
 			elif cls.type == 'desc_auxdatavar':
 				raw.extend( self._encode_auxdata( chunk, obj.aux, cls.param[0], cls.param[2], -cls.param[3] ) )
 			
 			elif cls.type == 'desc_strtable':
 				print( 'desc_strtable' )
+				
 			elif cls.type == 'desc_cargo':
-				#print( 'desc_cargo' )
 				for c in chunk.findall( 'cargo' ):
 					num = int( c.attrib['num'] )
 					capacity = int( c.attrib['capacity'] )
@@ -118,19 +120,13 @@ class LocoEncoder(LocoFile):
 						raw.extend( pack( 'B', cargotype ) )
 						raw.extend( pack( '<H', refcap ) )
 					raw.extend( [ 0xFF, 0xFF ] )
-				#( num, dumped ) = getnum( self.data, dumped, cls.param[0] )
-				#j = 0
-				#while not loopescape( j, num ):
-				#	dumped += self._dumpcap( self.data[ dumped: ], j, num )
-				#	j += 1
 			elif cls.type == 'desc_sprites':
-				#print( 'desc_sprites' )
 				raw.extend( self._encode_desc_sprites( chunk ) )
-				#dumped += self._dumpsprites( self.data[ dumped: ] )
+				
 			elif cls.type == 'desc_sounds':
 				print( 'desc_sounds' )
 				raw.extend( self._encode_desc_sounds( chunk ) )
-				#dumped += self._dumpsounds( self.data[ dumped: ] )
+				
 			else:
 				die( "Unknown obj description: {0}".format( cls.type ) )
 
