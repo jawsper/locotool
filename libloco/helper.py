@@ -118,3 +118,6 @@ def encodevalue( raw, size ):
 
 def pack( f, d ):
 	return raw_str_to_uint8_list( struct.pack( f, d ) )
+	
+def structsize( vars ):
+	return reduce( lambda sum, v: sum + ( abs( v.size ) * v.num ), vars, 0 )
