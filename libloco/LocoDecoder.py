@@ -31,22 +31,20 @@ class LocoDecoder(LocoFile):
 			self._name = self.f.read( 8 )
 			self.f.read( 4 ) # skip checksum
 			
-			self.xml = open( 'j_{0}.xml'.format( self._name.rstrip() ), 'w' )
-			
-			self.xml.write( '<?xml version="1.0" encoding="ISO-8859-1"?>\n' )
-			self.xml.write( '<object class="0x{0:02X}" subclass="0x{1:06X}" name="{2}">'.format( self._class, self._subclass, self._name ) )
-			
-			self._class &= 0x7F
-			
-			i = 0
-			while self.read_chunk( i ):
-				i += 1
-			self.xml.write( '</object>\n' )
-			self.xml.close()
+			with open( 'j_{0}.xml'.format( self._name.rstrip() ), 'w' ) as self.xml:			
+				self.xml.write( '<?xml version="1.0" encoding="ISO-8859-1"?>\n' )
+				self.xml.write( '<object class="0x{0:02X}" subclass="0x{1:06X}" name="{2}">'.format( self._class, self._subclass, self._name ) )
+				
+				self._class &= 0x7F
+				
+				i = 0
+				while self.read_chunk( i ):
+					i += 1
+				self.xml.write( '</object>\n' )
 		
 	def read_chunk( self, i ):
 		compression = self.read_uint8()
-		if compression == False: # EOF
+		if compression == None: # EOF
 			return False
 		length = self.read_uint32()
 		self.xml.write( '<chunk compression="{0}">\n'.format( compression ) )
@@ -62,7 +60,7 @@ class LocoDecoder(LocoFile):
 			print "Error! Unknown or unsupported compression {0}.".format( compression )
 			return False
 		#print( 'Chunk length: {0}, original length: {1}'.format( len( chunk ), length ) )
-		#with open( 'chunk_{0:X}.dat'.format( i ), 'wb' ) as wf:
+		#with open( 'chunk_{0}_{1:X}.dat'.format( self._name.rstrip(), i ), 'wb' ) as wf:
 		#	wf.write( chunk )
 		if not chunk:
 			raise Exception( 'No chunk!' )
