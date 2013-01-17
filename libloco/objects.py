@@ -173,10 +173,10 @@ vehvars = [
 
 vehdesc = [
 	objdesc( 'desc_objdata' ),
-	objdesc( 'desc_lang', [ 0 ] ),
+	objdesc( 'desc_lang',   [ 0 ] ),
 	objdesc( 'desc_useobj', [ descnumspec(0), 'tracktype', 0x11, 0x14 ] ),
 	objdesc( 'desc_useobj', [ 0xFFFFFFFA, 'trackmod', 0x10, 0x13 ] ), # 0xFFFFFFFA = -6
-	objdesc( 'desc_cargo', [ 2 ] ),
+	objdesc( 'desc_cargo',  [ 2 ] ),
 	objdesc( 'desc_useobj', [ descnumif(0x10f), 'visualeffect', 0x03 ] ),
 	objdesc( 'desc_useobj', [ descnumif(0x112), 'wakeeffect', 0x03 ] ),
 	objdesc( 'desc_useobj', [ descnumspec(1), 'rackrail', 0x10 ] ),
