@@ -1,7 +1,9 @@
 from __future__ import print_function
 from objects import *
 from sprite_png import *
+from varinf import varinf
 import struct
+from helper import structsize
 
 pos_struct = 0
 pos_desc = 3
@@ -34,8 +36,6 @@ class Chunk:
 				dumped += self._dumplang( self.data[ dumped: ], cls.param[0] ) 
 				
 			elif cls.type == 'desc_useobj':
-				#print 'desc_useobj'
-				#print cls.param
 				j = 0
 				while True:
 					( num, dumped ) = getnum( self.data, dumped, cls.param[0] )
@@ -45,14 +45,28 @@ class Chunk:
 					j += 1
 					
 			elif cls.type == 'desc_auxdata':
-				print( 'desc_auxdata' )
-				pass
+				( num,  dumped ) = getnum( self.data, dumped, cls.param[1] )
+				( num2, dumped ) = getnum( self.data, dumped, cls.param[3] )
+				j = 0
+				while not loopescape( j, num ):
+					dumped += _dumpaux( self.data[ dumped: ], obj.aux, cls.param[0], j, num, cls.param[2], num2 )
+					j += 1
+					
 			elif cls.type == 'desc_auxdatafix':
-				print( 'desc_auxdatafix' )
-				pass
-			elif cls.type == 'desc_auxdatavar':
-				print( 'desc_auxdatavar' )
-				pass
+				( num,  dumped ) = getnum( self.data, dumped, cls.param[1] )
+				j = 0
+				while not loopescape( j, num ):
+					num2 = getvalue( data, dumped, cls.param[3] )
+					dumped += _dumpaux( self.data[ dumped: ], obj.aux, cls.param[0], j, num, cls.param[2], num2 )
+					j += 1
+				
+			elif cls.type == 'desc_auxdatavar': # nameind numaux* size type
+				( num, dumped ) = getnum( self.data, dumped, cls.param[1] )
+				j = 0
+				while not loopescape( j, num ):
+					dumped += self._dumpaux( self.data[ dumped: ], obj.aux, cls.param[0], j, num, cls.param[2], -cls.param[3] )
+					j += 1
+				
 			elif cls.type == 'desc_strtable':
 				print( 'desc_strtable' )
 				pass
@@ -229,8 +243,61 @@ class Chunk:
 		dumped += totalsize
 		return dumped
 		
-	def _dumpaux( self ):
-		pass
+	def _dumpaux( self, data, aux, nameind, id, numid, size, num ):
+		auxvars = [
+			varinf( 0x00, 0, 0, '' )
+		]
+		#print( 'dumpaux( {0}, {1}, {2}, {3}, {4}, {5}, {6} )'.format( '{data}', aux, nameind, id, numid, size, num ) )
+		basename = 'aux_{0}'.format( nameind )
+		auxname = aux[nameind].name
+		if len( auxname ) == 0:
+			auxname = basename
+		
+		if numid:
+			name = '{0}[{1}]'.format( auxname, id )
+		else:
+			name = auxname
+			
+		type = 0
+		dumped = 0
+		siz = abs( size )
+		if num < 0:
+			type = -num
+			num = 0
+			i = 0
+			while True:
+				if getsvalue( data, i, type ) == -1:
+					break
+				num += 1
+				i += siz
+			dumped += type
+		
+		self._printxml( 1, '<auxdata name="{0}" size="{1}" num="{2}" type="{3}">'.format( name, siz, num, type ) )
+		
+		if size < 0:
+			num *= -size
+			size = 1
+		
+		auxvars[0].size = size
+		
+		vars = aux[nameind].vars
+		if not vars:
+			vars = auxvars
+		
+		siz = structsize( vars )
+		if siz != num * size:
+			vars[0].num = 1
+			siz = structsize( vars )
+			vars[0].num = num * size / siz
+			if vars[0].num * siz != size * num:
+				raise Exception( "{0} size {1}*{2} != {3}*{4}".format( name, siz, vars[0].num, size, num ) )
+		
+		dumped += self._dumpobjdata( data, vars, 2 )
+		
+		self._printxml( 1, '</auxdata>' )
+		#raise Exception( "Tijdelijk einde" )
+		return dumped
+		
 	def _dumpstrtable( self ):
 		pass
 		
