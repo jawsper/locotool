@@ -142,6 +142,454 @@ grounddesc = [
 ]
 
 # ***********************
+# Class 07:  TOWN NAMES
+# ***********************
+
+townpart = [
+	varinf( 0x00, 1, 1, "num" ),
+	varinf( 0x01, 1, 1, "numempty" ),
+	varinf( 0x02, 2, 1, "indexofs" ),
+]
+
+townvars = [
+	varinf( 0x00, 1, 2, "" ),
+	varinf( 0x02, 4, 6, "part", townpart ),
+]
+
+towndesc = [
+	objdesc( 'desc_objdata' ),
+	objdesc( 'desc_lang', [ 0 ] ),
+	objdesc( 'desc_strtable', [ 0, 2+0*4, 4+0*4 ] ),
+	objdesc( 'desc_strtable', [ 1, 2+1*4, 4+1*4 ] ),
+	objdesc( 'desc_strtable', [ 2, 2+2*4, 4+2*4 ] ),
+	objdesc( 'desc_strtable', [ 3, 2+3*4, 4+3*4 ] ),
+	objdesc( 'desc_strtable', [ 4, 2+4*4, 4+4*4 ] ),
+	objdesc( 'desc_strtable', [ 5, 2+5*4, 4+5*4 ] ),
+]
+
+# ***********************
+# Class 08:  CARGO TYPES
+# ***********************
+
+cargoflags = [
+	"", "refitoption",
+]
+
+cargovars = [
+	varinf( 0x00, 1, 2, "" ),
+	varinf( 0x02, 2, 1, "unitweight" ),
+	varinf( 0x04, 1, 12, "" ),
+	varinf( 0x10, 1, 1, "id" ),
+	varinf( 0x11, 1, 1, "" ),
+	varinf( 0x12, 1, 1, "flags", None, cargoflags ),
+	varinf( 0x13, 1, 2, "" ),
+	varinf( 0x15, 1, 1, "peakdays" ),
+	varinf( 0x16, 1, 1, "decay1days" ),
+	varinf( 0x17, 2, 1, "decay1rate" ),
+	varinf( 0x19, 2, 1, "decay2rate" ),
+	varinf( 0x1B, 2, 1, "paymentfactor" ),
+	varinf( 0x1D, 1, 1, "paymentind" ),
+	varinf( 0x1E, 1, 1, "" ),
+]
+
+cargodesc = [
+	objdesc( 'desc_objdata' ),
+	objdesc( 'desc_lang', [ 0 ] ),
+	objdesc( 'desc_lang', [ 1 ] ),
+	objdesc( 'desc_lang', [ 2 ] ),
+	objdesc( 'desc_lang', [ 3 ] ),
+	objdesc( 'desc_sprites' ),
+]
+
+
+# ***********************
+# Class 09:    FENCES
+# ***********************
+
+fenceflags = [
+]
+
+fencevars = [
+	varinf( 0x00, 1, 7, "" ),
+	varinf( 0x07, 1, 1, "flags", None, fenceflags ),
+	varinf( 0x08, 1, 1, "" ),
+	varinf( 0x09, 1, 1, "" ),
+]
+
+
+# ***********************
+# Class 0A:    SIGNALS
+# ***********************
+
+signalvars = [
+	varinf( 0x00, 1, 6, "" ),
+	varinf( 0x06,-2, 1, "costfactor" ),
+	varinf( 0x08,-2, 1, "sellcostfactor" ),
+	varinf( 0x0A, 1, 1, "costind" ),
+	varinf( 0x0B, 1, 15, "" ),
+	varinf( 0x1A, 2, 1, "designed" ),
+	varinf( 0x1C, 2, 1, "obsolete" ),
+]
+
+signaldesc = [
+	objdesc( 'desc_objdata' ),
+	objdesc( 'desc_lang', [ 0 ] ),
+	objdesc( 'desc_lang', [ 1 ] ),
+	objdesc( 'desc_sprites' ),
+]
+
+
+# ***********************
+# Class 0B:  CROSSINGS
+# ***********************
+
+crossingvars = [
+	varinf( 0x00, 1, 2, "" ),
+	varinf( 0x02,-2, 1, "costfactor" ),
+	varinf( 0x04, 1, 2, "" ),
+	varinf( 0x06, 1, 1, "costind" ),
+	varinf( 0x07, 1, 11, "" ),
+]
+
+
+# ***********************
+# Class 0C: STREET LIGHTS
+# ***********************
+
+lightvars = [
+	varinf( 0x00, 1, 2, "" ),
+	varinf( 0x02, 2, 3, "year" ),
+	varinf( 0x08, 1, 4, "" ),
+]
+
+
+# ***********************
+# Class 0D:    TUNNELS
+# ***********************
+
+# (see simplevars above)
+
+
+# ***********************
+# Class 0E:   BRIDGES
+# ***********************
+
+bridgevars = [
+	varinf( 0x00, 1, 2, "" ),
+	varinf( 0x02, 1, 1, "noroof" ),
+	varinf( 0x03, 1, 1, "" ),
+	varinf( 0x04, 1, 1, "" ),
+	varinf( 0x05, 1, 1, "" ),
+	varinf( 0x06, 1, 1, "" ),
+	varinf( 0x07, 1, 1, "" ),
+	varinf( 0x08, 1, 1, "spanlength" ),
+	varinf( 0x09, 1, 1, "pillarspacing" ),
+	varinf( 0x0A, 2, 1, "maxspeed" ),
+	varinf( 0x0C, 1, 1, "maxheight" ),
+	varinf( 0x0D, 1, 1, "costind" ),
+	varinf( 0x0E,-2, 1, "basecostfact" ),
+	varinf( 0x10,-2, 1, "heightcostfact" ),
+	varinf( 0x12,-2, 1, "sellcostfact" ),
+	varinf( 0x14, 2, 1, "disabledtrackcfg" ),
+	varinf( 0x16, 1,22, "" ),
+]
+
+
+# ***********************
+# Class 0F:  TRAIN STATIONS
+# ***********************
+
+track_pieces = [
+	"diagonal", "widecurve", "mediumcurve", "smallcurve",	# 1 2 4 8
+	"tightcurve", "normalslope", "steepslope", "",		# 10 20 40 80
+	"slopedcurve", "sbend",					# 100 200
+]
+
+trnstatvars = [
+	varinf( 0x00, 1, 4, "" ),
+	varinf( 0x04, 2, 1, "trackpieces", None, track_pieces ),
+	varinf( 0x06,-2, 1, "buildcostfact" ),
+	varinf( 0x08,-2, 1, "sellcostfact" ),
+	varinf( 0x0A, 1, 1, "costind" ),
+	varinf( 0x0B, 1,23, "" ),
+	varinf( 0x22, 1, 1, "numcompat" ),
+	varinf( 0x23, 1, 7, "" ),
+	varinf( 0x2a, 2, 1, "designed" ),
+	varinf( 0x2c, 2, 1, "obsolete" ),
+	varinf( 0x2e, 1, 128, "" ),
+]
+
+trnstataux = [
+	auxdesc( "", None ),
+]
+
+trnstatdesc = [
+	objdesc( 'desc_objdata' ),
+	objdesc( 'desc_lang', [ 0 ] ),
+	objdesc( 'desc_auxdatavar', [ 0, 32, 1, 4 ] ),
+	objdesc( 'desc_sprites' ),
+]
+
+
+# ***********************
+# Class 10:  TRACK MODS
+# ***********************
+
+trkmodvars = [
+	varinf( 0x00, 1, 2, "" ),
+	varinf( 0x02, 2, 1, "trackpieces", None, track_pieces ),
+	varinf( 0x04, 1, 1, "isoverhead" ),
+	varinf( 0x05, 1, 1, "costind" ),
+	varinf( 0x06,-2, 1, "buildcostfact" ),
+	varinf( 0x08,-2, 1, "sellcostfact" ),
+	varinf( 0x0A, 1, 8, "" ),
+]
+
+
+# ***********************
+# Class 11:   TRACKS
+# ***********************
+
+trackvars = [
+	varinf( 0x00, 1, 2, "" ),
+	varinf( 0x02, 2, 1, "trackpieces", None, track_pieces ),
+	varinf( 0x04, 2, 1, "stationtrackpieces", None, track_pieces ),
+	varinf( 0x06, 1, 1, "" ),
+	varinf( 0x07, 1, 1, "numcompat" ),
+	varinf( 0x08, 1, 1, "nummods" ),
+	varinf( 0x09, 1, 1, "numsignals" ),
+	varinf( 0x0A, 1, 10, "" ),
+	varinf( 0x14,-2, 1, "buildcostfact" ),
+	varinf( 0x16,-2, 1, "sellcostfact" ),
+	varinf( 0x18,-2, 1, "tunnelcostfact" ),
+	varinf( 0x1A, 1, 1, "costind" ),
+	varinf( 0x1B, 1, 1, "" ),
+	varinf( 0x1C, 2, 1, "curvespeed" ),
+	varinf( 0x1E, 1, 6, "" ),
+	varinf( 0x24, 1, 1, "numbridges" ),
+	varinf( 0x25, 1, 7, "" ),
+	varinf( 0x2C, 1, 1, "numstations" ),
+	varinf( 0x2D, 1, 7, "" ),
+	varinf( 0x34, 1, 1, "displayoffset" ),
+	varinf( 0x35, 1, 1, "" ),
+]
+
+trackdesc = [
+	objdesc( 'desc_objdata' ),
+	objdesc( 'desc_lang', [ 0 ] ),
+	objdesc( 'desc_useobj', [ 0xFFFFFFF9, 'compatible', 0x11, 0x14, -1 ] ),
+	objdesc( 'desc_useobj', [ 0xFFFFFFF8, 'trackmod', 0x10, -1 ] ),
+	objdesc( 'desc_useobj', [ 0xFFFFFFF7, 'signal', 0x0A, -1 ] ),
+	objdesc( 'desc_useobj', [  0, 'tunnel', 0x0D, -1 ] ),
+	objdesc( 'desc_useobj', [ 0xFFFFFFDC, 'bridge', 0x0E, -1 ] ),
+	objdesc( 'desc_useobj', [ 0xFFFFFFD4, 'station', 0x0F, -1 ] ),
+	objdesc( 'desc_sprites' ),
+]
+
+
+# ***********************
+# Class 12:  ROAD STATIONS
+# ***********************
+
+road_pieces = [
+	"smallcurve", "tightcurve", "normalslope", "steepslope",
+	"", "reverse",
+]
+
+roadstvars = [
+	varinf( 0x00, 1, 4, "" ),
+	varinf( 0x04, 2, 1, "roadpieces", None, road_pieces ),
+	varinf( 0x06,-2, 1, "buildcostfact" ),
+	varinf( 0x08,-2, 1, "sellcostfact" ),
+	varinf( 0x0A, 1, 1, "costind" ),
+	varinf( 0x0B, 1,22, "" ),
+	varinf( 0x21, 1, 1, "numcompat" ),
+	varinf( 0x22, 1, 6, "" ),
+	varinf( 0x28, 2, 1, "designed" ),
+	varinf( 0x2a, 2, 1, "obsolete" ),
+	varinf( 0x2c, 1,66, "" ),
+]
+
+roadstaux = [
+	auxdesc( "", None ),
+]
+
+roadstdesc = [
+	objdesc( 'desc_objdata' ),
+	objdesc( 'desc_lang', [ 0 ] ),
+	objdesc( 'desc_useobj', [ 0, ob_cargo, 0x08, -1 ] ),
+	objdesc( 'desc_auxdatavar', [ 0, 16, 1, 4 ] ),
+	objdesc( 'desc_sprites' ),
+]
+
+
+# ***********************
+# Class 13:  ROAD MODS
+# ***********************
+
+# (same as track mods)
+
+
+# ***********************
+# Class 14:    ROADS
+# ***********************
+
+roadvars = [
+	varinf( 0x00, 1, 2, "" ),
+	varinf( 0x02, 2, 1, "roadpieces", None, road_pieces ),
+	varinf( 0x04,-2, 1, "buildcostfact" ),
+	varinf( 0x06,-2, 1, "sellcostfact" ),
+	varinf( 0x08,-2, 1, "tunnelcostfact" ),
+	varinf( 0x0A, 1, 1, "costind" ),
+	varinf( 0x0B, 1, 9, "" ),
+	varinf( 0x14, 1, 1, "numbridges" ),
+	varinf( 0x15, 1, 8, "" ),
+	varinf( 0x1D, 1, 1, "numstations" ),
+	varinf( 0x1E, 1, 10, "" ),
+	varinf( 0x28, 1, 1, "numcompat" ),
+	varinf( 0x29, 1, 7, "" ),
+]
+
+roaddesc = [
+	objdesc( 'desc_objdata' ),
+	objdesc( 'desc_lang', [ 0 ] ),
+	objdesc( 'desc_useobj', [ 0xFFFFFFD8, ob_compatible, 0x11, 0x14, -1 ] ),
+	objdesc( 'desc_useobj', [ 0xFFFFFFDB, ob_roadmod, 0x13, -1 ] ),
+	objdesc( 'desc_useobj', [  0, ob_tunnel, 0x0D, -1 ] ),
+	objdesc( 'desc_useobj', [ 0xFFFFFFEC, ob_bridge, 0x0E, -1 ] ),
+	objdesc( 'desc_useobj', [ 0xFFFFFFE4, ob_station, 0x12, -1 ] ),
+	objdesc( 'desc_sprites' ),
+]
+
+
+# ***********************
+# Class 15:   AIRPORTS
+# ***********************
+
+airport_aux0 = [
+	varinf( 0x00, 1, 0, "height" ),
+]
+
+airport_aux1 = [
+	varinf( 0x00, 2, 0, "frames" ),
+]
+
+airport_aux2 = [
+	varinf( 0x00, 1, 0, "spriteset" ),
+]
+
+layoutvars = [
+	varinf( 0x00, 1, 1, "tilenum" ),
+	varinf( 0x01, 1, 1, "rotate" ),
+	varinf( 0x02,-1, 1, "x" ),
+	varinf( 0x03,-1, 1, "y" ),
+]
+
+airport_aux3 = [
+	varinf( 0x00, 4, 0, "tilepos", layoutvars ),
+]
+
+airportaux4flags = [
+	"terminal", "aircraftend", "", "ground",
+	"flight", "helibegin", "aircraftbegin", "heliend",
+	"touchdown",
+]
+
+airport_aux4 = [
+	varinf( 0x00,-2, 1, "x" ),
+	varinf( 0x02,-2, 1, "y" ),
+	varinf( 0x04,-2, 1, "z" ),
+	varinf( 0x06, 2, 1, "flags", None, airportaux4flags ),
+]
+
+airport_aux5 = [
+	varinf( 0x00, 1, 1, "" ),
+	varinf( 0x01, 1, 1, "from" ),
+	varinf( 0x02, 1, 1, "to" ),
+	varinf( 0x03, 1, 1, "" ),
+	varinf( 0x04, 4, 1, "busymask", None, nobits ),
+	varinf( 0x08, 4, 1, "", None, nobits ),
+]
+
+airportvars = [
+	varinf( 0x00, 1, 2, "" ),
+	varinf( 0x02,-2, 1, "buildcostfact" ),
+	varinf( 0x04,-2, 1, "sellcostfact" ),
+	varinf( 0x06, 1, 1, "costind" ),
+	varinf( 0x07, 1, 9, "" ),
+	varinf( 0x10, 2, 1, "allowedplanetypes" ),
+	varinf( 0x12, 1, 1, "numspritesets" ),
+	varinf( 0x13, 1, 1, "numtiles" ),
+	varinf( 0x14, 1,140,"" ),
+	varinf( 0xA0, 4, 1, "2x2tiles", None, nobits ),
+	varinf( 0xA4,-1, 1, "minx" ),
+	varinf( 0xA5,-1, 1, "miny" ),
+	varinf( 0xA6,-1, 1, "maxx" ),
+	varinf( 0xA7,-1, 1, "maxy" ),
+	varinf( 0xA8, 2, 1, "designed" ),
+	varinf( 0xAA, 2, 1, "obsolete" ),
+	varinf( 0xAC, 1, 1, "numnodes" ),
+	varinf( 0xAD, 1, 1, "numedges" ),
+	varinf( 0xAE, 1, 8, "", ),
+	varinf( 0xB6, 4, 1, "", None, nobits ),
+]
+
+airportaux = [
+	auxdesc( "spriteheight", airport_aux0 ),
+	auxdesc( "spriteanimframes", airport_aux1 ),
+	auxdesc( "tile", airport_aux2 ),
+	auxdesc( "layout", airport_aux3 ),
+	auxdesc( "node", airport_aux4 ),
+	auxdesc( "edge", airport_aux5),
+]
+
+airportdesc = [
+	objdesc( 'desc_objdata' ),
+	objdesc( 'desc_lang', [ 0 ] ),
+	objdesc( 'desc_auxdata', [ 0, 0, 1, -0x12 ] ),
+	objdesc( 'desc_auxdata', [ 1, 0, -2, -0x12 ] ),
+	objdesc( 'desc_auxdatavar', [ 2, -0x13, 1, 1 ] ),
+	objdesc( 'desc_auxdatavar', [ 3, 0, -4, 1 ] ),
+	objdesc( 'desc_auxdata', [ 4, -0xac, 1, 8 ] ),
+	objdesc( 'desc_auxdata', [ 5, -0xad, 1, 12 ] ),
+	objdesc( 'desc_sprites' ),
+]
+
+
+# ***********************
+# Class 16:     DOCKS
+# ***********************
+
+dockvars = [
+	varinf( 0x00, 1, 2, "" ),
+	varinf( 0x02,-2, 1, "buildcostfact" ),
+	varinf( 0x04,-2, 1, "sellcostfact" ),
+	varinf( 0x06, 1, 1, "costind" ),
+	varinf( 0x07, 1,11, "" ),
+	varinf( 0x12, 1, 1, "numaux01" ),
+	varinf( 0x13, 1, 1, "numaux2ent" ),
+	varinf( 0x14, 1,12, "" ),
+	varinf( 0x20, 2, 1, "designed" ),
+	varinf( 0x22, 2, 1, "obsolete" ),
+	varinf( 0x24, 1, 4, "" ),
+]
+
+dockaux = [
+	auxdesc( "", None ),
+	auxdesc( "", None ),
+	auxdesc( "", None ),
+]
+
+dockdesc = [
+	objdesc( 'desc_objdata' ),
+	objdesc( 'desc_lang', [ 0 ] ),
+	objdesc( 'desc_auxdata', [ 0, 0, 1, -0x12 ] ),
+	objdesc( 'desc_auxdata', [ 1, 0, -2, -0x12 ] ),
+	objdesc( 'desc_auxdatavar', [ 2, -0x13, 1, 1 ] ),
+	objdesc( 'desc_sprites' ),
+]
+
+# ***********************
 # Class 17:   VEHICLES
 # ***********************
 
