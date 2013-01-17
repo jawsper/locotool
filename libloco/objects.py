@@ -2,8 +2,8 @@ import struct
 from .varinf import varinf
 from .objdesc import objdesc
 from .objclass import objclass
+from .auxdesc import auxdesc
 from .helper import *
-
 
 spriteflags = [
 	"hasdata", "", "chunked", "",
@@ -79,6 +79,67 @@ currdesc = [
 	objdesc( 'desc_sprites' ),
 ]
 
+# ***********************
+# Class 03:  EXHAUST FX
+# ***********************
+
+exhfxvars = [
+	varinf( 0x00, 1, 30, "" ),
+	varinf( 0x1E, 1, 1, "numsnd" ),
+	varinf( 0x1F, 1, 9, "" ),
+]
+
+exhfxaux = [
+	auxdesc( "", None ),
+	auxdesc( "", None ),
+]
+
+exhfxdesc = [
+	objdesc( 'desc_objdata' ),
+	objdesc( 'desc_lang', [ 0 ] ),
+	objdesc( 'desc_auxdatavar', [ 0, 0, 2, 1 ] ),
+	objdesc( 'desc_auxdatavar', [ 1, 0, 2, 1 ] ),
+	objdesc( 'desc_useobj', [ 0xFFFFFFE2, 'ob_soundeffect', 0x01, -1 ] ), # FFFF FFE2 == -0x1e
+	objdesc( 'desc_sprites' ),
+]
+
+# ***********************
+# Class 04:  CLIFF FACES
+# ***********************
+
+# (see simple vars above)
+
+# ***********************
+# Class 05:   WATER
+# ***********************
+
+watervars = [
+	varinf( 0x00, 1, 2, "" ),
+	varinf( 0x02, 1, 1, "costind" ),
+	varinf( 0x03, 1, 1, "" ),
+	varinf( 0x04,-2, 1, "costfactor" ),
+	varinf( 0x06, 1, 8, "" ),
+]
+
+
+# ***********************
+# Class 06:  GROUND
+# ***********************
+
+groundvars = [
+	varinf( 0x00, 1, 2, "" ),
+	varinf( 0x02, 1, 1, "costind" ),
+	varinf( 0x03, 1, 5, "" ),
+	varinf( 0x08,-2, 1, "costfactor" ),
+	varinf( 0x0A, 1, 20, "" ),
+]
+
+grounddesc = [
+	objdesc( 'desc_objdata' ),
+	objdesc( 'desc_lang', [ 0 ] ),
+	objdesc( 'desc_useobj', [ 0, 'ob_cliff', 0x04, -1 ] ),
+	objdesc( 'desc_sprites' ),
+]
 
 # ***********************
 # Class 17:   VEHICLES
@@ -200,7 +261,7 @@ objclasses = [
 	objclass( interfacevars, 24, None, simpledesc ),	# 00 Interfaces
 	objclass( sfxvars,	 	 12, None, sfxdesc ),		# 01 Sound effects
 	objclass( currvars,	 	 12, None, currdesc ),		# 02 Currencies
-0,#	objclass( exhfxvars,	 40, exhfxaux, exhfxdesc ),	# 03 Exhaust effects
+	objclass( exhfxvars,	 40, exhfxaux, exhfxdesc ),	# 03 Exhaust effects
 0,#	objclass( simplevars,	  6, None,	simpledesc ),	# 04 Cliff faces
 0,#	objclass( watervars,	 14, None,	simpledesc ),	# 05 Water
 0,#	objclass( groundvars,	 30, None,	grounddesc ),	# 06 Ground
