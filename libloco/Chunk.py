@@ -244,9 +244,6 @@ class Chunk:
 		return dumped
 		
 	def _dumpaux( self, data, aux, nameind, id, numid, size, num ):
-		auxvars = [
-			varinf( 0x00, 0, 0, '' )
-		]
 		#print( 'dumpaux( {0}, {1}, {2}, {3}, {4}, {5}, {6} )'.format( '{data}', aux, nameind, id, numid, size, num ) )
 		basename = 'aux_{0}'.format( nameind )
 		auxname = aux[nameind].name
@@ -278,11 +275,10 @@ class Chunk:
 			num *= -size
 			size = 1
 		
-		auxvars[0].size = size
 		
 		vars = aux[nameind].vars
 		if not vars:
-			vars = auxvars
+			vars = [ varinf( 0x00, size, 0, '' ) ]
 		
 		siz = structsize( vars )
 		if siz != num * size:
@@ -295,7 +291,7 @@ class Chunk:
 		dumped += self._dumpobjdata( data, vars, 2 )
 		
 		self._printxml( 1, '</auxdata>' )
-		#raise Exception( "Tijdelijk einde" )
+		
 		return dumped
 		
 	def _dumpstrtable( self ):
