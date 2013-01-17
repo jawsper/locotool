@@ -548,12 +548,12 @@ airportaux = [
 airportdesc = [
 	objdesc( 'desc_objdata' ),
 	objdesc( 'desc_lang', [ 0 ] ),
-	objdesc( 'desc_auxdata', [ 0, 0, 1, -0x12 ] ),
-	objdesc( 'desc_auxdata', [ 1, 0, -2, -0x12 ] ),
-	objdesc( 'desc_auxdatavar', [ 2, -0x13, 1, 1 ] ),
-	objdesc( 'desc_auxdatavar', [ 3, 0, -4, 1 ] ),
-	objdesc( 'desc_auxdata', [ 4, -0xac, 1, 8 ] ),
-	objdesc( 'desc_auxdata', [ 5, -0xad, 1, 12 ] ),
+	objdesc( 'desc_auxdata',    [ 0, 0, 1, 0xFFFFFFEE ] ),
+	objdesc( 'desc_auxdata',    [ 1, 0, -2, 0xFFFFFFEE ] ),
+	objdesc( 'desc_auxdatavar', [ 2, 0xFFFFFFED, 1, 1 ] ),
+	objdesc( 'desc_auxdatavar', [ 3, 0x00000000, -4, 1 ] ),
+	objdesc( 'desc_auxdata',    [ 4, 0xFFFFFF54, 1, 8 ] ),
+	objdesc( 'desc_auxdata',    [ 5, 0xFFFFFF53, 1, 12 ] ),
 	objdesc( 'desc_sprites' ),
 ]
 
