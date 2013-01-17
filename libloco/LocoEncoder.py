@@ -64,6 +64,8 @@ class LocoEncoder(LocoFile):
 				pass
 			elif compression == 1:
 				chunk_data = self.chunk_rle_encode( chunk_data )
+			elif compression == 3:
+				chunk_data = self.chunk_scramble( chunk_data )
 			else:
 				raise Exception( 'Cannot encode chunk compression {0}!'.format( compression ) )
 
@@ -101,7 +103,7 @@ class LocoEncoder(LocoFile):
 				raw.extend( self._encode_auxdata( chunk, obj.aux, cls.param[0], cls.param[2], -cls.param[3] ) )
 			
 			elif cls.type == 'desc_strtable':
-				print( 'desc_strtable' )
+				raw.extend( self._encode_strtable( chunk, cls.param[0], cls.param[1] ) )
 				
 			elif cls.type == 'desc_cargo':
 				for c in chunk.findall( 'cargo' ):
@@ -114,6 +116,7 @@ class LocoEncoder(LocoFile):
 						raw.extend( pack( 'B', cargotype ) )
 						raw.extend( pack( '<H', refcap ) )
 					raw.extend( [ 0xFF, 0xFF ] )
+			
 			elif cls.type == 'desc_sprites':
 				raw.extend( self._encode_desc_sprites( chunk ) )
 				
@@ -228,7 +231,25 @@ class LocoEncoder(LocoFile):
 				data.extend( self._encode_desc_objdata( c, vars ) )
 		data.extend( [ 0xFF ] )
 		return data
-
+		
+	def _encode_strtable( self, chunk, id, num_offset ):
+		data = []
+		for c in chunk.findall( 'stringtable' ):
+			if int( c.attrib['id'] ) == id:
+				num = int( c.attrib['num'] )
+				str_data = []
+				for s in c:
+					str_id = int( s.attrib['id'] )
+					data.extend( pack( '<H', num * 2 + len( str_data ) ) )
+					str_type = int( s.attrib['type'] )
+					str_text = s.text
+					for char in str_text:
+						str_data.append( uint8_t( char ) )
+					str_data.append( 0x00 )
+					str_data.append( str_type )
+				data.extend( str_data )
+		return data
+		
 	def _encode_desc_sprites( self, chunk ):
 		data = [ 0x00 ] * 8
 
@@ -328,3 +349,11 @@ class LocoEncoder(LocoFile):
 
 	def chunk_rle_compress( self, data ):
 		pass
+		
+	def chunk_scramble( self, data ):
+		out = []
+		bits = 1
+		for b in data:
+			out.append( ROL( b, bits, 8 ) )
+			bits = ( bits + 2 ) & 7
+		return out
