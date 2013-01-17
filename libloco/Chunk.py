@@ -61,6 +61,7 @@ class Chunk:
 				j = 0
 				while not loopescape( j, num ):
 					num2 = getvalue( data, dumped, cls.param[3] )
+					dumped += cls.param[3]
 					dumped += self._dumpaux( self.data[ dumped: ], obj.aux, cls.param[0], j, num, cls.param[2], num2 )
 					j += 1
 			
@@ -122,6 +123,7 @@ class Chunk:
 				fname = 'field_{0:X}'.format( v.ofs )
 			if ofs != v.ofs:
 				die( 'Structure is invalid, ofs={0:X} but next field is {1:X}'.format( ofs, v.ofs ) )
+			
 			for j in range( v.num ):
 				name = fname
 				if v.num > 1:
@@ -162,7 +164,6 @@ class Chunk:
 		while language != 0xFF:
 			lang_str = ''
 			while data[ ofs ] != '\x00':
-				#print ofs, data[ ofs ]
 				lang_str += data[ ofs ]
 				ofs += 1
 			ofs += 1
@@ -252,7 +253,6 @@ class Chunk:
 		return dumped
 		
 	def _dumpaux( self, data, aux, nameind, id, numid, size, num ):
-		#print( 'dumpaux( {0}, {1}, {2}, {3}, {4}, {5}, {6} )'.format( '{data}', aux, nameind, id, numid, size, num ) )
 		basename = 'aux_{0}'.format( nameind )
 		auxname = aux[nameind].name
 		if len( auxname ) == 0:
@@ -287,14 +287,13 @@ class Chunk:
 			vars = [ varinf( 0x00, size, 0, '' ) ]
 		
 		siz = structsize( vars )
-		#print( num, size, siz )
 		if siz != num * size:
 			vars[0].num = 1
 			siz = structsize( vars )
 			vars[0].num = num * size / siz
 			if vars[0].num * siz != size * num:
 				raise Exception( "{0} size {1}*{2} != {3}*{4}".format( name, siz, vars[0].num, size, num ) )
-		#print( vars )
+		
 		dumped += self._dumpobjdata( data, vars, 2 )
 		
 		self._printxml( 1, '</auxdata>' )

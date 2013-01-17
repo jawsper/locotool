@@ -158,6 +158,7 @@ class LocoEncoder(LocoFile):
 			fname = v.name
 			if len( fname ) == 0:
 				fname = 'field_{0:X}'.format( v.ofs )
+			
 			for j in range( v.num ):
 				name = fname
 				if v.num > 1:
@@ -170,7 +171,6 @@ class LocoEncoder(LocoFile):
 						if c.attrib['name'] == name:
 							data.extend( v.encode( self._encode_flags( c.findall( 'bit' ), v.flags, v.size ) ) )
 							break
-					pass
 				elif v.structvars != None:
 					for c in chunk.findall( 'structure' ):
 						if c.attrib['name'] == name:
@@ -221,11 +221,11 @@ class LocoEncoder(LocoFile):
 				is_array = True
 				if int( s.group(1) ) == id:
 					ok = True
-					id += 1
+				id += 1
 			elif auxname == a_name:
 				ok = True
 			if ok:
-				size = int( c.attrib['size'] )
+				#size = int( c.attrib['size'] )
 				num = int( c.attrib['num'] )
 				type = int( c.attrib['type'] )
 				if size < 0:
@@ -242,7 +242,6 @@ class LocoEncoder(LocoFile):
 					vars[0].num = num * size / siz
 					if vars[0].num * siz != size * num:
 						raise Exception( "{0} size {1}*{2} != {3}*{4}".format( name, siz, vars[0].num, size, num ) )
-				
 				data.extend( self._encode_desc_objdata( c, vars ) )
 				if cls.type == 'desc_auxdatavar' and is_array:
 					data.append( 0xFF )
@@ -354,7 +353,7 @@ class LocoEncoder(LocoFile):
 
 			run = 1
 			if length and byte == data[ ofs ]:
-				while length and byte == data[ofs] and run < 127:
+				while length and byte == data[ ofs ] and run < 127:
 					run += 1
 					ofs += 1
 					length -= 1
@@ -362,7 +361,7 @@ class LocoEncoder(LocoFile):
 				out.append( int8_to_uint8( rle ) )
 				out.append( byte )
 			else:
-				while length and byte != data[ofs] and run < 126:
+				while length and byte != data[ ofs ] and run < 126:
 					byte = data[ ofs ]
 					run += 1
 					ofs += 1

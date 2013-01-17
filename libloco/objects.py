@@ -585,9 +585,9 @@ dockaux = [
 dockdesc = [
 	objdesc( 'desc_objdata' ),
 	objdesc( 'desc_lang', [ 0 ] ),
-	objdesc( 'desc_auxdata', [ 0, 0, 1, -0x12 ] ),
-	objdesc( 'desc_auxdata', [ 1, 0, -2, -0x12 ] ),
-	objdesc( 'desc_auxdatavar', [ 2, -0x13, 1, 1 ] ),
+	objdesc( 'desc_auxdata',    [ 0, 0,  1, 0xFFFFFFEE ] ),
+	objdesc( 'desc_auxdata',    [ 1, 0, -2, 0xFFFFFFEE ] ),
+	objdesc( 'desc_auxdatavar', [ 2, 0xFFFFFFED, 1, 1 ] ),
 	objdesc( 'desc_sprites' ),
 ]
 
