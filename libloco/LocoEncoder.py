@@ -102,12 +102,7 @@ class LocoEncoder(LocoFile):
 			elif cls.type == 'desc_auxdatafix':
 				print( 'desc_auxdatafix' )
 			elif cls.type == 'desc_auxdatavar':
-				print( 'desc_auxdatavar' )
-				for c in chunk.findall( 'auxdata' ):
-					a_name = c.attrib['name']
-					a_size = int( c.attrib['size'] )
-					a_num = int( c.attrib['num'] )
-					a_type = int( c.attrib['type'] )
+				raw.extend( self._encode_auxdata( chunk, obj.aux, cls.param[0], cls.param[2], -cls.param[3] ) )
 					
 			elif cls.type == 'desc_strtable':
 				print( 'desc_strtable' )
@@ -209,6 +204,39 @@ class LocoEncoder(LocoFile):
 						data.append( ord( x ) )
 				data.append( 0x00 )
 		data.append( 0xFF )
+		return data
+
+	def _encode_auxdata( self, chunk, aux, nameind, size, num ):
+		data = []
+		
+		basename = 'aux_{0}'.format( nameind )
+		auxname = aux[nameind].name
+		if len( auxname ) == 0:
+			auxname = basename
+		
+		for c in chunk.findall( 'auxdata' ):
+			a_name = c.attrib['name']
+			if re.search( '^{0}\\[?'.format( auxname ), a_name ):
+				size = int( c.attrib['size'] )
+				num = int( c.attrib['num'] )
+				type = int( c.attrib['type'] )
+				if size < 0:
+					num *= -size
+					size = 1
+				
+				vars = aux[nameind].vars
+				if not vars:
+					vars = [ varinf( 0x00, size, 0, '' ) ]
+				siz = structsize( vars )
+				if siz != num * size:
+					vars[0].num = 1
+					siz = structsize( vars )
+					vars[0].num = num * size / siz
+					if vars[0].num * siz != size * num:
+						raise Exception( "{0} size {1}*{2} != {3}*{4}".format( name, siz, vars[0].num, size, num ) )
+		
+				data.extend( self._encode_desc_objdata( c, vars ) )
+		data.extend( [ 0xFF ] )
 		return data
 
 	def _encode_desc_sprites( self, chunk ):
