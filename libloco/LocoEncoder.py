@@ -1,3 +1,4 @@
+from __future__ import print_function
 import xml.etree.ElementTree as ET
 import struct
 import re
@@ -94,13 +95,14 @@ class LocoEncoder(LocoFile):
 						raw.extend( [0x00] * 4 )
 
 			elif cls.type == 'desc_auxdata':
-				print( 'desc_auxdata' )
+				raw.extend( self._encode_auxdata( chunk, obj.aux, cls ) )
 				
 			elif cls.type == 'desc_auxdatafix':
 				print( 'desc_auxdatafix' )
+				raw.extend( self._encode_auxdata( chunk, obj.aux, cls ) )
 				
 			elif cls.type == 'desc_auxdatavar':
-				raw.extend( self._encode_auxdata( chunk, obj.aux, cls.param[0], cls.param[2], -cls.param[3] ) )
+				raw.extend( self._encode_auxdata( chunk, obj.aux, cls ) )
 			
 			elif cls.type == 'desc_strtable':
 				raw.extend( self._encode_strtable( chunk, cls.param[0], cls.param[1] ) )
@@ -199,17 +201,30 @@ class LocoEncoder(LocoFile):
 		data.append( 0xFF )
 		return data
 
-	def _encode_auxdata( self, chunk, aux, nameind, size, num ):
+	def _encode_auxdata( self, chunk, aux, cls ):
 		data = []
+		nameind = cls.param[0]
+		size = cls.param[2]
 		
 		basename = 'aux_{0}'.format( nameind )
 		auxname = aux[nameind].name
 		if len( auxname ) == 0:
 			auxname = basename
 		
+		id = 0
+		is_array = False
 		for c in chunk.findall( 'auxdata' ):
+			ok = False
 			a_name = c.attrib['name']
-			if re.search( '^{0}\\[?'.format( auxname ), a_name ):
+			s = re.search( '^{0}\\[(\d+)\\]$'.format( auxname ), a_name )
+			if s:
+				is_array = True
+				if int( s.group(1) ) == id:
+					ok = True
+					id += 1
+			elif auxname == a_name:
+				ok = True
+			if ok:
 				size = int( c.attrib['size'] )
 				num = int( c.attrib['num'] )
 				type = int( c.attrib['type'] )
@@ -227,9 +242,14 @@ class LocoEncoder(LocoFile):
 					vars[0].num = num * size / siz
 					if vars[0].num * siz != size * num:
 						raise Exception( "{0} size {1}*{2} != {3}*{4}".format( name, siz, vars[0].num, size, num ) )
-		
+				
 				data.extend( self._encode_desc_objdata( c, vars ) )
-		data.extend( [ 0xFF ] )
+				if cls.type == 'desc_auxdatavar' and is_array:
+					data.append( 0xFF )
+		
+		if cls.type == 'desc_auxdatavar' and not is_array:
+			data.append( 0xFF )
+		
 		return data
 		
 	def _encode_strtable( self, chunk, id, num_offset ):
@@ -259,12 +279,14 @@ class LocoEncoder(LocoFile):
 		spritedataoffset = 8 + 16 * num
 
 		ofs = 0
+		old = []
 		for c in chunk.findall( 'sprite' ):
 			id = c.attrib['id']
-			xofs = int(c.attrib['xofs'])
-			yofs = int(c.attrib['yofs'])
+			xofs = int( c.attrib['xofs'] )
+			yofs = int( c.attrib['yofs'] )
 			flags = self._encode_flags( c.findall( 'bit' ), spriteflags, 4 )
 			
+			wr_ofs = ofs
 			if c.find( 'stub' ) != None:
 				width = 1
 				height = 1
@@ -273,19 +295,27 @@ class LocoEncoder(LocoFile):
 					size = height * 2
 					pixels.extend( pack( '<H', size ) )
 				pixels.extend( getspriterow( [ int( c.find( 'stub' ).text ) ], flags ) )
+			elif c.find( 'pngfile' ) != None:
+				( pixels, width, height ) = readpng( c.find( 'pngfile' ).text, flags )
+			elif flags & 0x40:
+				pixels = []
+				( wr_ofs, width, height ) = old
 			else:
-				fname = c.find( 'pngfile' ).text
-				( pixels, width, height ) = readpng( fname, flags )
+				pixels = []
+				width = 0
+				height = 0
 
-			data.extend( pack( '<I', ofs ) ) # ofs
+			data.extend( pack( '<I', wr_ofs ) ) # ofs
 			data.extend( pack( '<H', width ) ) # width
 			data.extend( pack( '<H', height ) ) # height
 			data.extend( pack( '<h', xofs ) ) # xofs
 			data.extend( pack( '<h', yofs ) ) # yofs
 			data.extend( pack( '<I', flags ) ) # flags
 
-			spritedata.extend( pixels )
-			ofs += len( pixels )
+			if len( pixels ) > 0:
+				old = ( ofs, width, height )
+				spritedata.extend( pixels )
+				ofs += len( pixels )
 
 		data[0:4] = pack( '<I', num ) # replace 0 TOT 4 met nieuwe data
 		data[4:8] = pack( '<I', len( spritedata ) ) # replace 4 TOT 8 met nieuwe data

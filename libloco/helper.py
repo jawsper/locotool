@@ -56,7 +56,7 @@ def vehnumtrack( data ):
 	# return -1
 	return 0 if ( uint8_t( data[2] ) < 2 ) and not ( uint8_t( data[0xE1] ) & 2 ) else -1
 def vehnumrackrail( data ):
-	pass
+	return 0 if ( uint8_t( data[2] ) < 2 ) and ( uint8_t( data[0xE0] ) & 0x40 ) else -1
 
 calcdescnum = [ vehnumtrack, vehnumrackrail ]
 

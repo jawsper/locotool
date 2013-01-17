@@ -239,7 +239,7 @@ class Chunk:
 				( row, ofs ) = putspriterow( data[ spritedataoffset + ofs: ], 0, flags, 0, width )
 				self._printxml( 2, '<stub>{0}</stub>'.format( row[0] ) )
 			elif flags & 0x40:
-				pass
+				spritesize = 0
 			else:
 				pngname = self.loco.makepngname( i )
 				spritesize = makepng( pngname, data[ spritedataoffset + ofs: ], width, height, flags )
@@ -270,9 +270,7 @@ class Chunk:
 			type = -num
 			num = 0
 			i = 0
-			while True:
-				if getsvalue( data, i, type ) == -1:
-					break
+			while getsvalue( data, i, type ) != -1:
 				num += 1
 				i += siz
 			dumped += type
