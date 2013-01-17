@@ -241,7 +241,7 @@ class Chunk:
 			die( 'Unsupported number of samples' )
 		dumped += 4
 		
-		len = getvalue( data, dumped, 4 )
+		length = getvalue( data, dumped, 4 )
 		dumped += 4
 		
 		for i in range( 0, 4 ):
@@ -261,15 +261,33 @@ class Chunk:
 		dumped += 4
 		
 		# extra bytes which I do not understand
-		extra = len - ( 16 + 8 + 4 + wavlen )
+		extra = length - ( 16 + 8 + 4 + wavlen )
 		wavlen += extra
 		
 		wavname = self.loco.makefilename( '.wav' )
 		
 		self._printxml( 1, '<wavfile size="{0}">{1}</wavfile>'.format( extra, wavname ) )
 		
-		dumped += len
-		dumped += wavlen
+		with open( wavname, 'wb' ) as wf:
+			wf.write( r'RIFF' )
+			
+			length = 8+4+16+4+4+wavlen	# "WAVEfmt "+len+header+"data"+len+wavedata
+			wf.write( struct.pack( '<I', length ) )
+			
+			wf.write( r'WAVEfmt ' )
+			
+			length = 16
+			wf.write( struct.pack( '<I', length ) )
+			for i in range( length ):
+				wf.write( data[ dumped + i ] )
+			dumped += length
+			
+			wf.write( r'data' )
+			
+			wf.write( struct.pack( '<I', wavlen ) )
+			for i in range( wavlen ):
+				wf.write( data[ dumped + i ] )
+			dumped += wavlen
 		
 		return dumped
 
