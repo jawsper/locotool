@@ -31,10 +31,10 @@ class Chunk:
 		for cls in obj.desc:
 			if cls.type == 'desc_objdata':
 				dumped += self._dumpobjdata( self.data[ dumped: ], obj.vars, indent )
-				
+			
 			elif cls.type == 'desc_lang':
 				dumped += self._dumplang( self.data[ dumped: ], cls.param[0] ) 
-				
+			
 			elif cls.type == 'desc_useobj':
 				j = 0
 				while True:
@@ -43,42 +43,50 @@ class Chunk:
 						break
 					dumped += self._dumpuseobj( self.data[ dumped: ], j, num, cls.param[1], cls.param[2:] )
 					j += 1
-					
+			
+			#not tested
 			elif cls.type == 'desc_auxdata':
+				print( 'desc_auxdata' )
 				( num,  dumped ) = getnum( self.data, dumped, cls.param[1] )
 				( num2, dumped ) = getnum( self.data, dumped, cls.param[3] )
 				j = 0
 				while not loopescape( j, num ):
 					dumped += _dumpaux( self.data[ dumped: ], obj.aux, cls.param[0], j, num, cls.param[2], num2 )
 					j += 1
-					
+			
+			#not tested
 			elif cls.type == 'desc_auxdatafix':
+				print( 'desc_auxdatafix' )
 				( num,  dumped ) = getnum( self.data, dumped, cls.param[1] )
 				j = 0
 				while not loopescape( j, num ):
 					num2 = getvalue( data, dumped, cls.param[3] )
 					dumped += _dumpaux( self.data[ dumped: ], obj.aux, cls.param[0], j, num, cls.param[2], num2 )
 					j += 1
-				
+			
 			elif cls.type == 'desc_auxdatavar': # nameind numaux* size type
 				( num, dumped ) = getnum( self.data, dumped, cls.param[1] )
 				j = 0
 				while not loopescape( j, num ):
 					dumped += self._dumpaux( self.data[ dumped: ], obj.aux, cls.param[0], j, num, cls.param[2], -cls.param[3] )
 					j += 1
-				
+			
 			elif cls.type == 'desc_strtable':
 				dumped += self._dumpstrtable( self.data[ dumped: ], cls.param[0], uint8_t( self.data[cls.param[1]] ) )
+			
 			elif cls.type == 'desc_cargo':
 				( num, dumped ) = getnum( self.data, dumped, cls.param[0] )
 				j = 0
 				while not loopescape( j, num ):
 					dumped += self._dumpcap( self.data[ dumped: ], j, num )
 					j += 1
+			
 			elif cls.type == 'desc_sprites':
 				dumped += self._dumpsprites( self.data[ dumped: ] )
+			
 			elif cls.type == 'desc_sounds':
 				dumped += self._dumpsounds( self.data[ dumped: ] )
+			
 			else:
 				die( "Unknown obj description: {0}".format( cls.type ) )
 
@@ -293,7 +301,7 @@ class Chunk:
 		self._printxml( 1, '</auxdata>' )
 		
 		return dumped
-		
+	
 	def _dumpstrtable( self, data, id, num ):
 		dumped = num * 2
 		self._printxml( 1, '<stringtable id="{0}" num="{1}">'.format( id, num ) )
@@ -304,7 +312,7 @@ class Chunk:
 			dumped += len( curr_str ) + 2
 		self._printxml( 1, '</stringtable>' )
 		return dumped
-		
+	
 	def _dumpsounds( self, data ):
 		dumped = 0
 		
