@@ -24,6 +24,8 @@ namealiases = {
 	'takeoff': 'touchdown',
 }
 
+nobits = []
+
 # ***********************
 #  SIMPLE CLASS HANDLER
 # ***********************
@@ -99,7 +101,7 @@ exhfxdesc = [
 	objdesc( 'desc_lang', [ 0 ] ),
 	objdesc( 'desc_auxdatavar', [ 0, 0, 2, 1 ] ),
 	objdesc( 'desc_auxdatavar', [ 1, 0, 2, 1 ] ),
-	objdesc( 'desc_useobj', [ 0xFFFFFFE2, 'ob_soundeffect', 0x01, -1 ] ), # FFFF FFE2 == -0x1e
+	objdesc( 'desc_useobj', [ 0xFFFFFFE2, 'soundeffect', 0x01, -1 ] ), # FFFF FFE2 == -0x1e
 	objdesc( 'desc_sprites' ),
 ]
 
@@ -417,7 +419,7 @@ roadstaux = [
 roadstdesc = [
 	objdesc( 'desc_objdata' ),
 	objdesc( 'desc_lang', [ 0 ] ),
-	objdesc( 'desc_useobj', [ 0, ob_cargo, 0x08, -1 ] ),
+	objdesc( 'desc_useobj', [ 0, 'cargo', 0x08, -1 ] ),
 	objdesc( 'desc_auxdatavar', [ 0, 16, 1, 4 ] ),
 	objdesc( 'desc_sprites' ),
 ]
@@ -453,11 +455,11 @@ roadvars = [
 roaddesc = [
 	objdesc( 'desc_objdata' ),
 	objdesc( 'desc_lang', [ 0 ] ),
-	objdesc( 'desc_useobj', [ 0xFFFFFFD8, ob_compatible, 0x11, 0x14, -1 ] ),
-	objdesc( 'desc_useobj', [ 0xFFFFFFDB, ob_roadmod, 0x13, -1 ] ),
-	objdesc( 'desc_useobj', [  0, ob_tunnel, 0x0D, -1 ] ),
-	objdesc( 'desc_useobj', [ 0xFFFFFFEC, ob_bridge, 0x0E, -1 ] ),
-	objdesc( 'desc_useobj', [ 0xFFFFFFE4, ob_station, 0x12, -1 ] ),
+	objdesc( 'desc_useobj', [ 0xFFFFFFD8, 'compatible', 0x11, 0x14, -1 ] ),
+	objdesc( 'desc_useobj', [ 0xFFFFFFDB, 'roadmod', 0x13, -1 ] ),
+	objdesc( 'desc_useobj', [  0, 'tunnel', 0x0D, -1 ] ),
+	objdesc( 'desc_useobj', [ 0xFFFFFFEC, 'bridge', 0x0E, -1 ] ),
+	objdesc( 'desc_useobj', [ 0xFFFFFFE4, 'station', 0x12, -1 ] ),
 	objdesc( 'desc_sprites' ),
 ]
 
@@ -713,22 +715,22 @@ objclasses = [
 	objclass( simplevars,	  6, None,	simpledesc ),	# 04 Cliff faces
 	objclass( watervars,	 14, None,	simpledesc ),	# 05 Water
 	objclass( groundvars,	 30, None,	grounddesc ),	# 06 Ground
-0,#	objclass( townvars,	 	 26, None,	towndesc ),		# 07 Town names
-0,#	objclass( cargovars,	 31, None,	cargodesc ),	# 08 Cargos
-0,#	objclass( fencevars,	 10, None,	simpledesc ),	# 09 Fences
-0,#	objclass( signalvars,	 30, None,	signaldesc ),	# 0A Signals
-0,#	objclass( crossingvars,	 18, None,	simpledesc ),	# 0B Crossings
-0,#	objclass( lightvars,	 12, None,	simpledesc ),	# 0C Street lights
-0,#	objclass( simplevars,	  6, None,	simpledesc ),	# 0D Tunnels
-0,#	objclass( bridgevars,	 44, None,	simpledesc ),	# 0E Bridges
-0,#	objclass( trnstatvars,	174, trnstataux,trnstatdesc ),	# 0F Train stations
-0,#	objclass( trkmodvars,	 18, None,	simpledesc ),	# 10 Track modifications
-0,#	objclass( trackvars,	 54, None,	trackdesc ),	# 11 Tracks
-0,#	objclass( roadstvars,	110, roadstaux,	roadstdesc ),	# 12 Road stations
-0,#	objclass( trkmodvars,	 18, None,	simpledesc ),	# 13 Road modifications
-0,#	objclass( roadvars,	 	 48, None,	roaddesc ),		# 14 Roads
-0,#	objclass( airportvars,	186, airportaux,airportdesc ),	# 15 Airports
-0,#	objclass( dockvars,	 	 40, dockaux,	dockdesc ),	# 16 Docks
+	objclass( townvars,	 	 26, None,	towndesc ),		# 07 Town names
+	objclass( cargovars,	 31, None,	cargodesc ),	# 08 Cargos
+	objclass( fencevars,	 10, None,	simpledesc ),	# 09 Fences
+	objclass( signalvars,	 30, None,	signaldesc ),	# 0A Signals
+	objclass( crossingvars,	 18, None,	simpledesc ),	# 0B Crossings
+	objclass( lightvars,	 12, None,	simpledesc ),	# 0C Street lights
+	objclass( simplevars,	  6, None,	simpledesc ),	# 0D Tunnels
+	objclass( bridgevars,	 44, None,	simpledesc ),	# 0E Bridges
+	objclass( trnstatvars,	174, trnstataux,trnstatdesc ),	# 0F Train stations
+	objclass( trkmodvars,	 18, None,	simpledesc ),	# 10 Track modifications
+	objclass( trackvars,	 54, None,	trackdesc ),	# 11 Tracks
+	objclass( roadstvars,	110, roadstaux,	roadstdesc ),	# 12 Road stations
+	objclass( trkmodvars,	 18, None,	simpledesc ),	# 13 Road modifications
+	objclass( roadvars,	 	 48, None,	roaddesc ),		# 14 Roads
+	objclass( airportvars,	186, airportaux,airportdesc ),	# 15 Airports
+	objclass( dockvars,	 	 40, dockaux,	dockdesc ),	# 16 Docks
 	objclass( vehvars, 		350, None, vehdesc ),		# 17 Vehicles
 0,#	objclass( treevars,	 	 76, None,	simpledesc ),	# 18 Trees
 0,#	objclass( simplevars,	  6, None,	simpledesc ),	# 19 Snow
