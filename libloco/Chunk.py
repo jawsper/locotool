@@ -44,14 +44,14 @@ class Chunk:
 					dumped += self._dumpuseobj( self.data[ dumped: ], j, num, cls.param[1], cls.param[2:] )
 					j += 1
 			
-			#not tested
 			elif cls.type == 'desc_auxdata':
-				print( 'desc_auxdata' )
 				( num,  dumped ) = getnum( self.data, dumped, cls.param[1] )
 				( num2, dumped ) = getnum( self.data, dumped, cls.param[3] )
+				num  = uint32_to_int32( num )
+				num2 = uint32_to_int32( num2 )
 				j = 0
 				while not loopescape( j, num ):
-					dumped += _dumpaux( self.data[ dumped: ], obj.aux, cls.param[0], j, num, cls.param[2], num2 )
+					dumped += self._dumpaux( self.data[ dumped: ], obj.aux, cls.param[0], j, num, cls.param[2], num2 )
 					j += 1
 			
 			#not tested
@@ -61,7 +61,7 @@ class Chunk:
 				j = 0
 				while not loopescape( j, num ):
 					num2 = getvalue( data, dumped, cls.param[3] )
-					dumped += _dumpaux( self.data[ dumped: ], obj.aux, cls.param[0], j, num, cls.param[2], num2 )
+					dumped += self._dumpaux( self.data[ dumped: ], obj.aux, cls.param[0], j, num, cls.param[2], num2 )
 					j += 1
 			
 			elif cls.type == 'desc_auxdatavar': # nameind numaux* size type
@@ -289,13 +289,14 @@ class Chunk:
 			vars = [ varinf( 0x00, size, 0, '' ) ]
 		
 		siz = structsize( vars )
+		#print( num, size, siz )
 		if siz != num * size:
 			vars[0].num = 1
 			siz = structsize( vars )
 			vars[0].num = num * size / siz
 			if vars[0].num * siz != size * num:
 				raise Exception( "{0} size {1}*{2} != {3}*{4}".format( name, siz, vars[0].num, size, num ) )
-		
+		#print( vars )
 		dumped += self._dumpobjdata( data, vars, 2 )
 		
 		self._printxml( 1, '</auxdata>' )
