@@ -112,7 +112,7 @@ class PNGWriter:
 			if palettetype & 1:
 				for i in range( 12 ):
 					pal[ ccolind + i ] = MASKOUT
-		self.w = png.Writer( w, h, palette = pal, background = ( 0, ), gamma = 1.4 )
+		self.w = png.Writer( w, h, palette = pal, background = ( 0x70, ), gamma = 1.4 )
 	def close( self ):
 		self.fp.close()
 		self.fp = None
