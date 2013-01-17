@@ -263,7 +263,7 @@ objclasses = [
 	objclass( currvars,	 	 12, None, currdesc ),		# 02 Currencies
 	objclass( exhfxvars,	 40, exhfxaux, exhfxdesc ),	# 03 Exhaust effects
 	objclass( simplevars,	  6, None,	simpledesc ),	# 04 Cliff faces
-0,#	objclass( watervars,	 14, None,	simpledesc ),	# 05 Water
+	objclass( watervars,	 14, None,	simpledesc ),	# 05 Water
 0,#	objclass( groundvars,	 30, None,	grounddesc ),	# 06 Ground
 0,#	objclass( townvars,	 	 26, None,	towndesc ),		# 07 Town names
 0,#	objclass( cargovars,	 31, None,	cargodesc ),	# 08 Cargos

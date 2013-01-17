@@ -229,7 +229,8 @@ class Chunk:
 			
 			spritesize = 0
 			if width == 1 and height == 1:
-				self._printxml( 2, '<stub>{0}</stub>' )
+				( row, ofs ) = putspriterow( data[ spritedataoffset + ofs: ], 0, flags, 0, width )
+				self._printxml( 2, '<stub>{0}</stub>'.format( row[0] ) )
 			elif flags & 0x40:
 				pass
 			else:
