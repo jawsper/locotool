@@ -19,7 +19,7 @@ class LocoFile:
 	def read_smth( self, spec ):
 		r = self.f.read( struct.calcsize( spec ) )
 		if len( r ) == 0:
-			return False
+			return None
 		return struct.unpack( spec, r )[0]
 	def read_int8( self ):
 		return self.read_smth( 'b' )
