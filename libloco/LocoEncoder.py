@@ -1,13 +1,20 @@
 import xml.etree.ElementTree as ET
 import struct
+import re
 
 from .LocoFile import LocoFile
-from helper import raw_str_to_uint8_list, uint8_list_to_raw_str
-from helper import uint8_t, int8_to_uint8
+from helper import uint8_list_to_raw_str, raw_str_to_uint8_list
+from helper import uint8_t, int8_to_uint8, pack
 from objects import *
+from .sprite_png import readpng
 
-def pack( f, d ):
-	return raw_str_to_uint8_list( struct.pack( f, d ) )
+def ROR(x, n, bits = 32):
+	mask = (2L**n) - 1
+	mask_bits = x & mask
+	return (x >> n) | (mask_bits << (bits - n))
+
+def ROL(x, n, bits = 32):
+	return ROR(x, bits - n, bits)
 
 class LocoEncoder(LocoFile):
 	def encode( self ):
@@ -29,15 +36,19 @@ class LocoEncoder(LocoFile):
 		
 		raw = []
 		
-		print( _class, _subclass, _name )
+		#print( _class, _subclass, _name )
 		raw.append( _class )
 		raw.append( _subclass & 0xFF )
 		raw.append( ( _subclass >> 8 ) & 0xFF )
 		raw.append( ( _subclass >> 16 ) & 0xFF )
 		for i in range( 8 ):
 			raw.append( uint8_t( _name[i] ) )
-		for i in range( 4 ):
-			raw.append( 0xFF ) # checksum todo
+		raw.extend( [ 0xFF ] * 4 ) # checksum gets calculated later
+		
+		c = 0xF369A75B
+		c = ROL( c ^ raw[0], 11 )
+		for i in range( 4, 12 ):
+			c = ROL( c ^ raw[i], 11 )
 		
 		for _chunk in root:
 			if _chunk.tag != 'chunk':
@@ -51,7 +62,10 @@ class LocoEncoder(LocoFile):
 			raw.append( compression )
 			
 			chunk_data = self.chunk_encode( _chunk, obj )
-			print chunk_data
+			
+			for x in chunk_data:
+				c = ROL( c ^ x, 11 )
+				
 			if compression == 0:
 				pass
 			elif compression == 1:
@@ -59,9 +73,10 @@ class LocoEncoder(LocoFile):
 			else:
 				raise Exception( 'Cannot encode chunk compression {0}!'.format( compression ) )
 			
-			#length!
 			raw.extend( pack( '<I', len( chunk_data ) ) )
 			raw.extend( chunk_data )
+			
+		raw[ 0x0C : 0x10 ] = pack( '<I', c )
 		return uint8_list_to_raw_str( raw )
 		
 	def chunk_encode( self, chunk, obj ):
@@ -69,21 +84,30 @@ class LocoEncoder(LocoFile):
 		
 		for cls in obj.desc:
 			if cls.type == 'desc_objdata':
-				print( 'desc_objdata' )
+				#print( 'desc_objdata' )
 				raw.extend( self._encode_desc_objdata( chunk, obj.vars ) )
 				
 			elif cls.type == 'desc_lang':
-				print( 'desc_lang' )
+				#print( 'desc_lang' )
 				raw.extend( self._encode_desc_lang( chunk, cls.param[0] ) )
 				
 			elif cls.type == 'desc_useobj':
-				print( 'desc_useobj' )
+				#print( 'desc_useobj' )
+				
+				for c in chunk.findall( 'useobject' ):
+					if re.search( '^{0}(\\[\\d+\\])?$'.format( cls.param[1] ), c.attrib['desc'] ):
+						#print( 'ok {0} {1} {2}'.format( c.attrib['desc'], int( c.attrib['class'] ), c.text ) )
+						raw.extend( pack( '<I', int( c.attrib['class'] ) ) )
+						for i in range( 8 ):
+							raw.append( uint8_t( c.text[i] ) )
+						raw.extend( [0x00] * 4 )
+						
 				#j = 0
 				#while True:
 				#	( num, dumped ) = getnum( self.data, dumped, cls.param[0] )
 				#	if loopescape( j, num ):
 				#		break
-				#	dumped += self._dumpuseobj( self.data[ dumped: ], j, num, cls.param[1], cls.param[2:] )
+				#	raw.extend( self._encode_desc_useobj( self.data[ dumped: ], j, num, cls.param[1], cls.param[2:] )
 				#	j += 1
 					
 			elif cls.type == 'desc_auxdata':
@@ -95,28 +119,35 @@ class LocoEncoder(LocoFile):
 			elif cls.type == 'desc_strtable':
 				print( 'desc_strtable' )
 			elif cls.type == 'desc_cargo':
-				print( 'desc_cargo' )
+				#print( 'desc_cargo' )
+				for c in chunk.findall( 'cargo' ):
+					num = int( c.attrib['num'] )
+					capacity = int( c.attrib['capacity'] )
+					raw.extend( pack( 'B', capacity ) )
+					for ct in c.findall( 'cargotype' ):
+						cargotype = int( ct.attrib['id'] )
+						refcap = int( ct.text )
+						raw.extend( pack( 'B', cargotype ) )
+						raw.extend( pack( '<H', refcap ) )
+					raw.extend( [ 0xFF, 0xFF ] )
 				#( num, dumped ) = getnum( self.data, dumped, cls.param[0] )
 				#j = 0
 				#while not loopescape( j, num ):
 				#	dumped += self._dumpcap( self.data[ dumped: ], j, num )
 				#	j += 1
 			elif cls.type == 'desc_sprites':
-				print( 'desc_sprites' )
+				#print( 'desc_sprites' )
 				raw.extend( self._encode_desc_sprites( chunk ) )
 				#dumped += self._dumpsprites( self.data[ dumped: ] )
 			elif cls.type == 'desc_sounds':
 				print( 'desc_sounds' )
+				raw.extend( self._encode_desc_sounds( chunk ) )
 				#dumped += self._dumpsounds( self.data[ dumped: ] )
 			else:
 				die( "Unknown obj description: {0}".format( cls.type ) )
 		
 		return raw
-	#def test( self ):
-	#	with open( self.filename, 'rb' ) as c:
-	#		d = self.chunk_rle_encode( raw_str_to_uint8_list( c.read() ) )
-	#		with open( self.filename + '.re-encoded', 'wb' ) as w:
-	#			w.write( uint8_list_to_raw_str( d ) )
+		
 	def _encode_flags( self, bits, flags, size ):
 		if size > 4:
 			raise Exception( "Can't encode flags with {0} bytes".format( size ) )		
@@ -129,14 +160,14 @@ class LocoEncoder(LocoFile):
 				name = ""
 			if len( name ) == 0:
 				name = defname = 'bit_{0:X}'.format( i )
-			print name
+			#print name
 			state = 0
 			for b in bits:
 				if b.attrib['name'] == name:
 					state = int( b.text )
 					break
 			value |= state << i
-		return pack( '<I', value )
+		return value
 		
 	def _encode_desc_objdata( self, chunk, vars ):
 		data = []
@@ -152,12 +183,16 @@ class LocoEncoder(LocoFile):
 				if size == 0:
 					pass
 				if v.flags != None:
-					#value = chunk.find( 
-					#data.extend( self._encode_flags( int( 
-					print 'v.flags!'
+					for c in chunk.findall( 'bitmask' ):
+						if c.attrib['name'] == name:
+							data.extend( v.encode( self._encode_flags( c.findall( 'bit' ), v.flags, v.size ) ) )
+							break
 					pass
 				elif v.structvars != None:
-					print 'v.structvars!'
+					for c in chunk.findall( 'structure' ):
+						if c.attrib['name'] == name:
+							data.extend( self._encode_desc_objdata( c, v.structvars ) )
+							break
 				else:
 					value = 0
 					tag = 'variable' if len( v.name ) > 0 else 'unknown'
@@ -165,7 +200,7 @@ class LocoEncoder(LocoFile):
 						if c.attrib['name'] == name:
 							value = int( c.text )
 							break
-					data.extend( raw_str_to_uint8_list( v.encode( value ) ) )
+					data.extend( v.encode( value ) )
 		return data
 		
 	def _encode_desc_lang( self, chunk, num ):
@@ -182,28 +217,59 @@ class LocoEncoder(LocoFile):
 				data.append( 0x00 )
 		data.append( 0xFF )
 		return data
+	def _encode_desc_useobj( self, chunk, num, total, type, classes ):
+		data = []
 		
+		return data
+	
 	def _encode_desc_sprites( self, chunk ):
 		data = [ 0x00 ] * 8
 		
 		num = len( chunk.findall( 'sprite' ) )
 		size = 0
+		spritedata = []
 		spritedataoffset = 8 + 16 * num
 		
+		ofs = 0
 		for c in chunk.findall( 'sprite' ):
+			fname = c.find( 'pngfile' ).text
 			id = c.attrib['id']
-			xofs = c.attrib['xofs']
-			yofs = c.attrib['yofs']
+			xofs = int(c.attrib['xofs'])
+			yofs = int(c.attrib['yofs'])
+			flags = self._encode_flags( c.findall( 'bit' ), spriteflags, 4 )
+			( pixels, width, height ) = readpng( fname, flags )
 			
-			data.extend( [0xFE] * 4 ) # ofs
-			data.extend( [0xFE] * 2 ) # width
-			data.extend( [0xFE] * 2 ) # height
-			data.extend( [0xFE] * 2 ) # xofs
-			data.extend( [0xFE] * 2 ) # yofs
-			data.extend( self._encode_flags( c.findall( 'bit' ), spriteflags, 4 ) ) # flags
+			data.extend( pack( '<I', ofs ) ) # ofs
+			data.extend( pack( '<H', width ) ) # width
+			data.extend( pack( '<H', height ) ) # height
+			data.extend( pack( '<h', xofs ) ) # xofs
+			data.extend( pack( '<h', yofs ) ) # yofs
+			data.extend( pack( '<I', flags ) ) # flags
 			
-		data[0:4] = pack( '<I', num )  # replace 0 TOT 4 met nieuwe data
-		data[4:8] = pack( '<I', size ) # replace 4 TOT 8 met nieuwe data
+			spritedata.extend( pixels )
+			ofs += len( pixels )
+			
+		data[0:4] = pack( '<I', num ) # replace 0 TOT 4 met nieuwe data
+		data[4:8] = pack( '<I', len( spritedata ) ) # replace 4 TOT 8 met nieuwe data
+		data.extend( spritedata )
+		return data
+		
+	def _encode_desc_sounds( self, chunk ):
+		data = []
+		for c in chunk.findall( 'wavfile' ):
+			with open( c.text, 'rb' ) as wf:
+				raw_wav = raw_str_to_uint8_list( wf.read() )
+			length = len( raw_wav ) - 0x2C
+			data.extend( pack( '<I', 1 ) )
+			data.extend( pack( '<I', length + 16 + 8 + 4 ) )
+			data.extend( [ 0x00 ] * 16 )
+			data.extend( pack( '<I', 1 ) )
+			data.extend( pack( '<I', 8 ) )
+			data.extend( pack( '<I', length - int( c.attrib['size'] ) ) )
+			for i in range( 16 ):
+				data.append( raw_wav[0x14 + i] )
+			for i in range( length ):
+				data.append( raw_wav[0x2c + i] )
 		
 		return data
 		
