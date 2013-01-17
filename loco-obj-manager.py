@@ -22,6 +22,6 @@ if __name__ == '__main__':
 	if path != None:
 		for filename in os.listdir( path ):
 			if filename.lower().endswith( '.dat' ):
-				f = LocoFile( os.path.join( path, filename ) )
+				f = LocoDecoder( os.path.join( path, filename ) )
 				print( '{2} class: 0x{0:02X} {3}'.format( *f.get_header() ) )
 	pass
