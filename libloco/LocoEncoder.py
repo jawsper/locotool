@@ -103,7 +103,7 @@ class LocoEncoder(LocoFile):
 				print( 'desc_auxdatafix' )
 			elif cls.type == 'desc_auxdatavar':
 				raw.extend( self._encode_auxdata( chunk, obj.aux, cls.param[0], cls.param[2], -cls.param[3] ) )
-					
+			
 			elif cls.type == 'desc_strtable':
 				print( 'desc_strtable' )
 			elif cls.type == 'desc_cargo':

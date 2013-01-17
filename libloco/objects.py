@@ -262,7 +262,7 @@ objclasses = [
 	objclass( sfxvars,	 	 12, None, sfxdesc ),		# 01 Sound effects
 	objclass( currvars,	 	 12, None, currdesc ),		# 02 Currencies
 	objclass( exhfxvars,	 40, exhfxaux, exhfxdesc ),	# 03 Exhaust effects
-0,#	objclass( simplevars,	  6, None,	simpledesc ),	# 04 Cliff faces
+	objclass( simplevars,	  6, None,	simpledesc ),	# 04 Cliff faces
 0,#	objclass( watervars,	 14, None,	simpledesc ),	# 05 Water
 0,#	objclass( groundvars,	 30, None,	grounddesc ),	# 06 Ground
 0,#	objclass( townvars,	 	 26, None,	towndesc ),		# 07 Town names
