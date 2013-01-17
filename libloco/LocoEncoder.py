@@ -4,17 +4,11 @@ import re
 
 from .LocoFile import LocoFile
 from helper import uint8_list_to_raw_str, raw_str_to_uint8_list
-from helper import uint8_t, int8_to_uint8, pack
+from helper import uint8_t, int8_to_uint8, pack, ROL
 from objects import *
 from .sprite_png import readpng, getspriterow
 
-def ROR(x, n, bits = 32):
-	mask = (2L**n) - 1
-	mask_bits = x & mask
-	return (x >> n) | (mask_bits << (bits - n))
 
-def ROL(x, n, bits = 32):
-	return ROR(x, bits - n, bits)
 
 class LocoEncoder(LocoFile):
 	def encode( self ):

@@ -3,7 +3,7 @@ import os
 from .LocoFile import LocoFile
 from .Chunk import Chunk
 from objects import objclassnames
-from helper import uint8_t
+from helper import uint8_t, ROR
 
 class LocoDecoder(LocoFile):
 	xml = None
@@ -54,8 +54,8 @@ class LocoDecoder(LocoFile):
 			chunk = self.chunk_rle_decode( length )
 		elif compression == 2: # RLE compressed
 			chunk = self.chunk_decompress( length )
-		#elif compression == 3: # Scrambled?
-		#	pass
+		elif compression == 3: # Scrambled?
+			chunk = self.chunk_descramble( length )
 		else:
 			print "Error! Unknown or unsupported compression {0}.".format( compression )
 			return False
@@ -111,3 +111,13 @@ class LocoDecoder(LocoFile):
 				chunklen += length
 
 		return chunk
+	
+	# descramble using success bit rotates
+	def chunk_descramble( self, length ):
+		chunk = []
+		bits = 1
+		for i in range( length ):
+			chunk.append( ROR( uint8_t( self.f.read(1) ), bits, 8 ) )
+			bits = ( bits + 2 ) & 7
+		from helper import uint8_list_to_raw_str
+		return uint8_list_to_raw_str( chunk )
