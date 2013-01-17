@@ -27,6 +27,8 @@ def int8_to_uint8( inp ):
 	return a_to_b( 'b', 'B', inp )
 def uint16_to_int16( inp ):
 	return a_to_b( 'H', 'h', inp )
+def uint32_to_int32( inp ):
+	return a_to_b( 'I', 'i', inp )
 
 def uint8_t( inp ):
 	return struct.unpack( 'B', inp )[0]
