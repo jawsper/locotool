@@ -20,22 +20,22 @@ class LocoEncoder(LocoFile):
 	def encode( self ):
 		xml_data = ET.parse( self.filename )
 		root = xml_data.getroot()
-		
+
 		_name = root.attrib['name']
-		
+
 		output = open( 'j_{0}.dat'.format( _name.rstrip() ), 'wb' )
 		output.write( self.parsexml( root ) )
 		output.close()
-		
+
 	def parsexml( self, root ):
 		_class    = int( root.attrib['class'], 16 )
 		_subclass = int( root.attrib['subclass'], 16 )
 		_name     = root.attrib['name']
-		
+
 		obj = objclasses[ _class & 0x7F ]
-		
+
 		raw = []
-		
+
 		#print( _class, _subclass, _name )
 		raw.append( _class )
 		raw.append( _subclass & 0xFF )
@@ -44,78 +44,71 @@ class LocoEncoder(LocoFile):
 		for i in range( 8 ):
 			raw.append( uint8_t( _name[i] ) )
 		raw.extend( [ 0xFF ] * 4 ) # checksum gets calculated later
-		
+
 		c = 0xF369A75B
 		c = ROL( c ^ raw[0], 11 )
 		for i in range( 4, 12 ):
 			c = ROL( c ^ raw[i], 11 )
-		
+
 		for _chunk in root:
 			if _chunk.tag != 'chunk':
 				raise Exception( 'Expecting chunk, got {0}!'.format( _chunk.tag ) )
 			compression = int( _chunk.attrib['compression'] )
-			
+
 			# steal the compression cheating from the c code :)
 			if compression == 2:
 				compression = 1
-			
+
 			raw.append( compression )
-			
+
 			chunk_data = self.chunk_encode( _chunk, obj )
-			
+
 			for x in chunk_data:
 				c = ROL( c ^ x, 11 )
-				
+
 			if compression == 0:
 				pass
 			elif compression == 1:
 				chunk_data = self.chunk_rle_encode( chunk_data )
 			else:
 				raise Exception( 'Cannot encode chunk compression {0}!'.format( compression ) )
-			
+
 			raw.extend( pack( '<I', len( chunk_data ) ) )
 			raw.extend( chunk_data )
-			
+
 		raw[ 0x0C : 0x10 ] = pack( '<I', c )
 		return uint8_list_to_raw_str( raw )
-		
+
 	def chunk_encode( self, chunk, obj ):
 		raw = []
-		
+
 		for cls in obj.desc:
 			if cls.type == 'desc_objdata':
-				#print( 'desc_objdata' )
 				raw.extend( self._encode_desc_objdata( chunk, obj.vars ) )
-				
+
 			elif cls.type == 'desc_lang':
-				#print( 'desc_lang' )
 				raw.extend( self._encode_desc_lang( chunk, cls.param[0] ) )
-				
+
 			elif cls.type == 'desc_useobj':
-				#print( 'desc_useobj' )
-				
 				for c in chunk.findall( 'useobject' ):
 					if re.search( '^{0}(\\[\\d+\\])?$'.format( cls.param[1] ), c.attrib['desc'] ):
-						#print( 'ok {0} {1} {2}'.format( c.attrib['desc'], int( c.attrib['class'] ), c.text ) )
 						raw.extend( pack( '<I', int( c.attrib['class'] ) ) )
 						for i in range( 8 ):
 							raw.append( uint8_t( c.text[i] ) )
 						raw.extend( [0x00] * 4 )
-						
-				#j = 0
-				#while True:
-				#	( num, dumped ) = getnum( self.data, dumped, cls.param[0] )
-				#	if loopescape( j, num ):
-				#		break
-				#	raw.extend( self._encode_desc_useobj( self.data[ dumped: ], j, num, cls.param[1], cls.param[2:] )
-				#	j += 1
-					
+
 			elif cls.type == 'desc_auxdata':
 				print( 'desc_auxdata' )
 			elif cls.type == 'desc_auxdatafix':
 				print( 'desc_auxdatafix' )
 			elif cls.type == 'desc_auxdatavar':
 				print( 'desc_auxdatavar' )
+				for c in chunk.findall( 'auxdata' ):
+					a_name = c.attrib['name']
+					a_size = int( c.attrib['size'] )
+					a_num = int( c.attrib['num'] )
+					a_type = int( c.attrib['type'] )
+					
 			elif cls.type == 'desc_strtable':
 				print( 'desc_strtable' )
 			elif cls.type == 'desc_cargo':
@@ -145,13 +138,13 @@ class LocoEncoder(LocoFile):
 				#dumped += self._dumpsounds( self.data[ dumped: ] )
 			else:
 				die( "Unknown obj description: {0}".format( cls.type ) )
-		
+
 		return raw
-		
+
 	def _encode_flags( self, bits, flags, size ):
 		if size > 4:
-			raise Exception( "Can't encode flags with {0} bytes".format( size ) )		
-		value = 0		
+			raise Exception( "Can't encode flags with {0} bytes".format( size ) )
+		value = 0
 		for i in range( size * 8 ):
 			defname = None
 			if i < len( flags ):
@@ -168,7 +161,7 @@ class LocoEncoder(LocoFile):
 					break
 			value |= state << i
 		return value
-		
+
 	def _encode_desc_objdata( self, chunk, vars ):
 		data = []
 		for v in vars:
@@ -202,10 +195,10 @@ class LocoEncoder(LocoFile):
 							break
 					data.extend( v.encode( value ) )
 		return data
-		
+
 	def _encode_desc_lang( self, chunk, num ):
 		data = []
-		
+
 		for c in chunk.findall( 'description' ):
 			if int( c.attrib['num'] ) == num:
 				language = int( c.attrib['language'] )
@@ -217,19 +210,15 @@ class LocoEncoder(LocoFile):
 				data.append( 0x00 )
 		data.append( 0xFF )
 		return data
-	def _encode_desc_useobj( self, chunk, num, total, type, classes ):
-		data = []
-		
-		return data
-	
+
 	def _encode_desc_sprites( self, chunk ):
 		data = [ 0x00 ] * 8
-		
+
 		num = len( chunk.findall( 'sprite' ) )
 		size = 0
 		spritedata = []
 		spritedataoffset = 8 + 16 * num
-		
+
 		ofs = 0
 		for c in chunk.findall( 'sprite' ):
 			fname = c.find( 'pngfile' ).text
@@ -238,22 +227,22 @@ class LocoEncoder(LocoFile):
 			yofs = int(c.attrib['yofs'])
 			flags = self._encode_flags( c.findall( 'bit' ), spriteflags, 4 )
 			( pixels, width, height ) = readpng( fname, flags )
-			
+
 			data.extend( pack( '<I', ofs ) ) # ofs
 			data.extend( pack( '<H', width ) ) # width
 			data.extend( pack( '<H', height ) ) # height
 			data.extend( pack( '<h', xofs ) ) # xofs
 			data.extend( pack( '<h', yofs ) ) # yofs
 			data.extend( pack( '<I', flags ) ) # flags
-			
+
 			spritedata.extend( pixels )
 			ofs += len( pixels )
-			
+
 		data[0:4] = pack( '<I', num ) # replace 0 TOT 4 met nieuwe data
 		data[4:8] = pack( '<I', len( spritedata ) ) # replace 4 TOT 8 met nieuwe data
 		data.extend( spritedata )
 		return data
-		
+
 	def _encode_desc_sounds( self, chunk ):
 		data = []
 		for c in chunk.findall( 'wavfile' ):
@@ -270,20 +259,20 @@ class LocoEncoder(LocoFile):
 				data.append( raw_wav[0x14 + i] )
 			for i in range( length ):
 				data.append( raw_wav[0x2c + i] )
-		
+
 		return data
-		
+
 	def chunk_rle_encode( self, data ):
 		out = []
 		length = len( data )
 		ofs = 0
 		while length > 0:
 			start = ofs
-			
+
 			byte = data[ ofs ]
 			ofs += 1
 			length -= 1
-			
+
 			run = 1
 			if length and byte == data[ ofs ]:
 				while length and byte == data[ofs] and run < 127:
@@ -308,6 +297,6 @@ class LocoEncoder(LocoFile):
 				for i in range( start, start + run ):
 					out.append( data[ i ] )
 		return out
-	
+
 	def chunk_rle_compress( self, data ):
 		pass
