@@ -68,8 +68,7 @@ class Chunk:
 					j += 1
 				
 			elif cls.type == 'desc_strtable':
-				print( 'desc_strtable' )
-				pass
+				dumped += self._dumpstrtable( self.data[ dumped: ], cls.param[0], uint8_t( self.data[cls.param[1]] ) )
 			elif cls.type == 'desc_cargo':
 				( num, dumped ) = getnum( self.data, dumped, cls.param[0] )
 				j = 0
@@ -295,8 +294,16 @@ class Chunk:
 		
 		return dumped
 		
-	def _dumpstrtable( self ):
-		pass
+	def _dumpstrtable( self, data, id, num ):
+		dumped = num * 2
+		self._printxml( 1, '<stringtable id="{0}" num="{1}">'.format( id, num ) )
+		for i in range( num ):
+			dumped = getvalue( data, i * 2, 2 )
+			curr_str = getstr( data[ dumped: ] )
+			self._printxml( 2, '<string id="{0}" type="{1}">{2}</string>'.format( i, uint8_t( data[ dumped + len( curr_str ) + 1 ] ), curr_str ) )
+			dumped += len( curr_str ) + 2
+		self._printxml( 1, '</stringtable>' )
+		return dumped
 		
 	def _dumpsounds( self, data ):
 		dumped = 0
