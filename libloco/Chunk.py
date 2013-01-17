@@ -3,7 +3,7 @@ from objects import *
 from sprite_png import *
 from varinf import varinf
 import struct
-from helper import structsize
+from helper import structsize, xml_str
 
 pos_struct = 0
 pos_desc = 3
@@ -54,13 +54,11 @@ class Chunk:
 					dumped += self._dumpaux( self.data[ dumped: ], obj.aux, cls.param[0], j, num, cls.param[2], num2 )
 					j += 1
 			
-			#not tested
 			elif cls.type == 'desc_auxdatafix':
-				print( 'desc_auxdatafix' )
 				( num,  dumped ) = getnum( self.data, dumped, cls.param[1] )
 				j = 0
 				while not loopescape( j, num ):
-					num2 = getvalue( data, dumped, cls.param[3] )
+					num2 = getvalue( self.data, dumped, cls.param[3] )
 					dumped += cls.param[3]
 					dumped += self._dumpaux( self.data[ dumped: ], obj.aux, cls.param[0], j, num, cls.param[2], num2 )
 					j += 1
@@ -135,7 +133,7 @@ class Chunk:
 				
 				if v.flags != None:
 					self._printxml( indent, '<bitmask name="{0}" size="{1}">'.format( name, size ) )
-					dumped = self._dumpflags( v.getvalue( data ), v.flags, size, indent + 1 )
+					dumped = self._dumpflags( v.getvalue( data, j ), v.flags, size, indent + 1 )
 					self._printxml( indent,  '</bitmask>' )
 				elif v.structvars != None:
 					self._printxml( indent, '<structure name="{0}" size="{1}">'.format( name, size ) )
@@ -167,6 +165,7 @@ class Chunk:
 				lang_str += data[ ofs ]
 				ofs += 1
 			ofs += 1
+			lang_str = xml_str( lang_str )
 			self._printxml( 1, '<description num="{0}" language="{1}">{2}</description>'.format( num, language, lang_str ) )
 			language = struct.unpack( 'B', data[ ofs ] )[0]
 			ofs += 1

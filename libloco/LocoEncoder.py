@@ -98,7 +98,6 @@ class LocoEncoder(LocoFile):
 				raw.extend( self._encode_auxdata( chunk, obj.aux, cls ) )
 				
 			elif cls.type == 'desc_auxdatafix':
-				print( 'desc_auxdatafix' )
 				raw.extend( self._encode_auxdata( chunk, obj.aux, cls ) )
 				
 			elif cls.type == 'desc_auxdatavar':
@@ -158,7 +157,7 @@ class LocoEncoder(LocoFile):
 			fname = v.name
 			if len( fname ) == 0:
 				fname = 'field_{0:X}'.format( v.ofs )
-			
+			#print( 'fname: {0}; v.size: {1}; v.num: {2}'.format( fname, v.size, v.num ) )
 			for j in range( v.num ):
 				name = fname
 				if v.num > 1:
@@ -248,7 +247,7 @@ class LocoEncoder(LocoFile):
 		
 		if cls.type == 'desc_auxdatavar' and not is_array:
 			data.append( 0xFF )
-		
+		return map( lambda x: 0xFA, data )
 		return data
 		
 	def _encode_strtable( self, chunk, id, num_offset ):

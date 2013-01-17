@@ -697,7 +697,224 @@ vehdesc = [
 	objdesc( 'desc_sprites' ),
 ]
 
+# ***********************
+# Class 18:    TREES
+# ***********************
 
+treevars = [
+	varinf( 0x00, 1, 3, "" ),
+	varinf( 0x03, 1, 1, "height" ),
+	varinf( 0x04, 1,59, "" ),
+	varinf( 0x3F, 1, 1, "costind" ),
+	varinf( 0x40,-2, 1, "buildcostfact" ),
+	varinf( 0x42,-2, 1, "clearcostfact" ),
+	varinf( 0x44, 1, 8, "" ),
+]
+
+
+# ***********************
+# Class 19:    SNOW
+# ***********************
+
+# (see simple vars above)
+
+
+# ***********************
+# Class 1A:   CLIMATES
+# ***********************
+
+climvars = [
+	varinf( 0x00, 1, 2, "" ),
+	varinf( 0x02, 1, 1, "firstseason" ),
+	varinf( 0x03, 1, 4, "seasonlength" ),
+	varinf( 0x07, 1, 3, "" ),
+]
+
+climdesc = [
+	objdesc( 'desc_objdata' ),
+	objdesc( 'desc_lang', [ 0 ] ),
+]
+
+
+# ***********************
+# Class 1B:   SHAPES
+# ***********************
+
+shapevars = [
+	varinf( 0x00, 1, 14, "" ),
+]
+
+
+# ***********************
+# Class 1C:   BUILDINGS
+# ***********************
+
+bldg_flags = [
+	"", "", "", "ishq",	# 1 2 4 8
+]
+
+bldngvars = [
+	varinf( 0x00, 1, 6, "" ),
+	varinf( 0x06, 1, 1, "numaux01" ),
+	varinf( 0x07, 1, 1, "numaux2ent" ),
+	varinf( 0x08, 1,140,"" ),
+	varinf( 0x94, 2, 1, "earliestyr" ),
+	varinf( 0x96, 2, 1, "latestyr" ),
+	varinf( 0x98, 1, 1, "flags", None, bldg_flags ),
+	varinf( 0x99, 1, 1, "costind" ),
+	varinf( 0x9A,-2, 1, "clearcostfact" ),
+	varinf( 0x9C, 1, 4, "" ),
+	varinf( 0xA0, 1, 2, "numproduce" ),
+	varinf( 0xA2, 1, 4, "" ),
+	varinf( 0xA6, 1, 4, "numaccept" ),
+	varinf( 0xAA, 1, 3, "" ),
+	varinf( 0xAD, 1, 1, "numaux3ent" ),
+	varinf( 0xAE, 1,16, "" ),
+]
+
+bldngaux = [
+	auxdesc( "", None ),
+	auxdesc( "", None ),
+	auxdesc( "", None ),
+	auxdesc( "", None ),
+]
+
+bldngdesc = [
+	objdesc( 'desc_objdata' ),
+	objdesc( 'desc_lang', [ 0 ] ),
+	objdesc( 'desc_auxdata',    [ 0, 0, 1, 0xFFFFFFFA ] ),
+	objdesc( 'desc_auxdata',    [ 1, 0, -2, 0xFFFFFFFA ] ),
+	objdesc( 'desc_auxdatavar', [ 2, 0xFFFFFFF9, 1, 1 ] ),
+	objdesc( 'desc_useobj',     [ 4, 'cargo', 0x08, 0xFF, -1 ] ),
+	objdesc( 'desc_auxdatafix', [ 3, 0xFFFFFF53, 1, 2 ] ),
+	objdesc( 'desc_sprites' ),
+]
+
+
+# ***********************
+# Class 1D:  SCAFFOLDING
+# ***********************
+
+scaffvars = [
+	varinf( 0x00, 1, 18, "" ),
+]
+
+
+# ***********************
+# Class 1E:  INDUSTRIES
+# ***********************
+
+industryflags = [
+	"", "", "", "",		# 1, 2, 4, 8
+	"", "", "", "",		# 10, 20, 40, 80
+	"", "", "", "",		# 100, 200, 400, 800
+	"", "", "", "",		# 1000, 2000, 4000, 8000
+	"", "needall", "canincreaseproduction", "candecreaseproduction",
+				# 100000, 200000, 400000, 800000
+]
+
+indvars = [
+	varinf( 0x00, 1,30, "" ),
+	varinf( 0x1E, 1, 1, "numaux01" ),
+	varinf( 0x1F, 1, 1, "numaux4ent" ),
+	varinf( 0x20, 1,157,"" ),
+	varinf( 0xBD, 1, 1, "numaux5" ),
+	varinf( 0xBE, 1,12, "" ),
+	varinf( 0xCA, 2, 1, "firstyear" ),
+	varinf( 0xCC, 2, 1, "lastyear" ),
+	varinf( 0xCE, 1, 1, "" ),
+	varinf( 0xCF, 1, 1, "costind" ),
+	varinf( 0xD0,-2, 1, "costfactor1" ),
+	varinf( 0xD2, 1, 18, "" ),
+	varinf( 0xE4, 4, 1, "flags", None, industryflags ),
+	varinf( 0xE8, 1, 12, "" ),
+]
+
+indaux = [
+	auxdesc( "", None ),
+	auxdesc( "", None ),
+	auxdesc( "", None ),
+	auxdesc( "", None ),
+	auxdesc( "", None ),
+	auxdesc( "", None ),
+]
+
+inddesc = [
+	objdesc( 'desc_objdata' ),
+	objdesc( 'desc_lang', [ 0 ] ),
+	objdesc( 'desc_lang', [ 1 ] ),
+	objdesc( 'desc_lang', [ 2 ] ),
+	objdesc( 'desc_lang', [ 3 ] ),
+	objdesc( 'desc_lang', [ 4 ] ),
+	objdesc( 'desc_lang', [ 5 ] ),
+	objdesc( 'desc_lang', [ 6 ] ),
+	objdesc( 'desc_lang', [ 7 ] ),
+	objdesc( 'desc_auxdata',    [ 0, 0, 1, 0xFFFFFFE2 ] ),
+	objdesc( 'desc_auxdata',    [ 1, 0, 2, 0xFFFFFFE2 ] ),
+	objdesc( 'desc_auxdatafix', [ 2, 4, 1, 1 ] ),
+	objdesc( 'desc_auxdatavar', [ 3, 0, 2, 1 ] ),
+	objdesc( 'desc_auxdatavar', [ 4, 0xFFFFFFE1, 1, 1 ] ),
+	objdesc( 'desc_auxdata',    [ 5, 0, 1, 0xFFFFFF43 ] ),
+	objdesc( 'desc_useobj', [ 2, 'produces', 0x08, 0xFF, 0xFFFFFFFF ] ),
+	objdesc( 'desc_useobj', [ 3, 'accepts', 0x08, 0xFF, 0xFFFFFFFF ] ),
+	objdesc( 'desc_useobj', [ 6, 'fence', 0x09, 0xFF, 0xFFFFFFFF ] ),
+	objdesc( 'desc_sprites' ),
+]
+
+
+# ***********************
+# Class 1F:   REGIONS
+# ***********************
+
+regionvars = [
+	varinf( 0x00, 1, 18, "" ),
+]
+
+regiondesc = [
+	objdesc( 'desc_objdata' ),
+	objdesc( 'desc_lang', [ 0 ] ),
+	objdesc( 'desc_useobj', [ 0xFFFFFFF8, 'cargo', 0x08, -1 ] ),
+	objdesc( 'desc_useobj', [ descnumuntil(), 'default', 0x100, -1 ] ),
+	objdesc( 'desc_sprites' ),
+]
+
+
+# ***********************
+# Class 20:  COMPANIES
+# ***********************
+
+comp_sprites = [
+]
+
+compvars = [
+	varinf( 0x00, 1,12, "" ),
+	varinf( 0x0C, 1, 2, "spritesets", None, comp_sprites ),
+	varinf( 0x0E, 1,38, "" ),
+	varinf( 0x34, 1, 1, "intelligence" ),
+	varinf( 0x35, 1, 1, "aggressiveness" ),
+	varinf( 0x36, 1, 1, "competitiveness" ),
+	varinf( 0x37, 1, 1, "" ),
+]
+
+compdesc = [
+	objdesc( 'desc_objdata' ),
+	objdesc( 'desc_lang', [ 0 ] ),
+	objdesc( 'desc_lang', [ 1 ] ),
+	objdesc( 'desc_sprites' ),
+]
+
+
+# ***********************
+# Class 21:   TEXTS
+# ***********************
+
+# (uses simple vars)
+
+textdesc = [
+	objdesc( 'desc_objdata' ),
+	objdesc( 'desc_lang', [ 0 ] ),
+	objdesc( 'desc_lang', [ 1 ] ),
+]
 
 # ***********************
 #  END OF CLASS HANDLERS
@@ -732,17 +949,16 @@ objclasses = [
 	objclass( airportvars,	186, airportaux,airportdesc ),	# 15 Airports
 	objclass( dockvars,	 	 40, dockaux,	dockdesc ),	# 16 Docks
 	objclass( vehvars, 		350, None, vehdesc ),		# 17 Vehicles
-0,#	objclass( treevars,	 	 76, None,	simpledesc ),	# 18 Trees
-0,#	objclass( simplevars,	  6, None,	simpledesc ),	# 19 Snow
-0,#	objclass( climvars,	 	 10, None,	climdesc ),		# 1A Climates
-0,#	objclass( shapevars,	 14, None,	simpledesc ),	# 1B Shapes
-0,#	objclass( bldngvars,	190, bldngaux,	bldngdesc ),# 1C bldngs
-0,#	objclass( scaffvars,	 18, None,	simpledesc ),	# 1D Scaffolding
-0,#	objclass( indvars,		244, indaux,	inddesc ),	# 1E Industries
-0,#	objclass( regionvars,	 18, None,	regiondesc ),	# 1F Regions
-0,#	objclass( compvars,	 	 56, None,	compdesc ),		# 20 Companies
-0 #	objclass( simplevars,	  6, None,	textdesc ),		# 21 Texts
-
+	objclass( treevars,	 	 76, None,	simpledesc ),	# 18 Trees
+	objclass( simplevars,	  6, None,	simpledesc ),	# 19 Snow
+	objclass( climvars,	 	 10, None,	climdesc ),		# 1A Climates
+	objclass( shapevars,	 14, None,	simpledesc ),	# 1B Shapes
+	objclass( bldngvars,	190, bldngaux,	bldngdesc ),# 1C bldngs
+	objclass( scaffvars,	 18, None,	simpledesc ),	# 1D Scaffolding
+	objclass( indvars,		244, indaux,	inddesc ),	# 1E Industries
+	objclass( regionvars,	 18, None,	regiondesc ),	# 1F Regions
+	objclass( compvars,	 	 56, None,	compdesc ),		# 20 Companies
+	objclass( simplevars,	  6, None,	textdesc ),		# 21 Texts
 ]
 
 objclassnames = [

@@ -19,6 +19,11 @@ def getstr( data ):
 			break
 		str += x
 	return str
+
+def xml_str( inp ):
+	inp = inp.replace( '&', '&amp;' )
+	return inp
+	
 def a_to_b( a, b, inp ):
 	return struct.unpack( b, struct.pack( a, inp ) )[0]
 def uint8_to_int8( inp ):
@@ -78,7 +83,7 @@ def getnum( data, ofs, numdef ):
 		return ( num, ofs )
 	elif type == 1:
 		if uint8_t( data[ ofs ] ) != 0xFF:
-			return 0xffffff
+			return ( 0xffffff, ofs )
 		ofs += 1
 		return ( -1, ofs )
 	elif type == 2:
@@ -102,6 +107,8 @@ def makenum( value, numdef ):
 	num = uint16_to_int16( numdef & 0xFFFF )
 	return ( type, arg, num )
 
+def descnumuntil():
+	return ( 0x01000000 )
 def descnumspec( x ):
 	return ( 0x04000000 | ( ( x ) & 0xffff ) )
 def descnumif(x):
