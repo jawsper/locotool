@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-from libloco import LocoDecoder, LocoEncoder
+import libloco.LocoDecoder
+import libloco.LocoEncoder
 
 import sys
 import os
@@ -19,17 +20,17 @@ if __name__ == '__main__':
 			path = os.path.realpath( sys.argv[1] )
 		else:
 			if sys.argv[1].lower().endswith( '.xml' ):
-				f = LocoEncoder( sys.argv[1] )
+				f = libloco.LocoEncoder( sys.argv[1] )
 				f.encode()
 			else:
-				f = LocoDecoder( sys.argv[1] )
+				f = libloco.LocoDecoder( sys.argv[1] )
 				f.decode()
 	else:
 		path = os.path.realpath( '.' )
 	if path != None:
 		for filename in os.listdir( path ):
 			if filename.lower().endswith( '.dat' ):
-				f = LocoDecoder( os.path.join( path, filename ) )
+				f = libloco.LocoDecoder( os.path.join( path, filename ) )
 				if test:
 					if f.get_header()[0] == test:
 						open( os.path.join( '.', filename ), 'wb' ).write( open( os.path.join( path, filename ), 'rb' ).read() )
