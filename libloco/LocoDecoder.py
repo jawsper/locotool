@@ -1,5 +1,5 @@
+from __future__ import print_function
 import struct
-import os
 from .LocoFile import LocoFile
 from .Chunk import Chunk
 from objects import objclassnames
@@ -57,8 +57,7 @@ class LocoDecoder(LocoFile):
 		elif compression == 3: # Scrambled?
 			chunk = self.chunk_descramble( length )
 		else:
-			print "Error! Unknown or unsupported compression {0}.".format( compression )
-			return False
+			raise Exception( "Error! Unknown or unsupported compression {0}.".format( compression ) )
 		#print( 'Chunk length: {0}, original length: {1}'.format( len( chunk ), length ) )
 		#with open( 'chunk_{0}_{1:X}.dat'.format( self._name.rstrip(), i ), 'wb' ) as wf:
 		#	wf.write( chunk )
@@ -79,7 +78,7 @@ class LocoDecoder(LocoFile):
 			if rle < 0:
 				data = self.read_uint8()
 				length -= 1
-				for i in range( 0, run ):
+				for i in range( run ):
 					chunk += struct.pack( 'B', data )
 			else:
 				length -= run

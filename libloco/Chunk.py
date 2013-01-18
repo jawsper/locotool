@@ -1,9 +1,12 @@
 from __future__ import print_function
-from objects import *
-from sprite_png import *
-from varinf import varinf
 import struct
-from helper import structsize, xml_str
+
+from .objects import objclasses, spriteflags
+from .sprite_png import makepng, putspriterow
+from .structs import varinf
+from .helper import structsize, xml_str, die, getnum, loopescape
+from .helper import uint32_to_int32, getstr
+from .helper import getvalue, getsvalue, uint8_t
 
 pos_struct = 0
 pos_desc = 3
@@ -89,8 +92,8 @@ class Chunk:
 			else:
 				die( "Unknown obj description: {0}".format( cls.type ) )
 
-	def _printxml( self, indent, str ):
-		self.xml.write( '{0}{1}\n'.format( '\t' * indent, str ) )
+	def _printxml( self, indent, s ):
+		self.xml.write( '{0}{1}\n'.format( '\t' * indent, s ) )
 		pass
 		
 	# write a bit field
@@ -112,10 +115,10 @@ class Chunk:
 		return size
 		
 	# dump a structure to the xml file, structure definition in the vars parameter
-	def _dumpobjdata( self, data, vars, indent ):
+	def _dumpobjdata( self, data, a_vars, indent ):
 		totaldumped = 0
 		ofs = 0
-		for v in vars:
+		for v in a_vars:
 			fname = v.name
 			if len( fname ) == 0:
 				fname = 'field_{0:X}'.format( v.ofs )
@@ -173,9 +176,9 @@ class Chunk:
 		return ofs
 		
 	# dump an object dependence (i.e. an outside object that this object depends on)
-	def _dumpuseobj( self, data, num, total, type, classes ):
+	def _dumpuseobj( self, data, num, total, a_type, classes ):
 		#print '_dumpuseobj( {0}, {1}, {2}, {3} )'.format( num, total, type, classes )
-		typename = type
+		typename = a_type
 		if total > 1:
 			typename = '{0}[{1}]'.format( typename, num )
 		
@@ -251,57 +254,57 @@ class Chunk:
 		dumped += totalsize
 		return dumped
 		
-	def _dumpaux( self, data, aux, nameind, id, numid, size, num ):
+	def _dumpaux( self, data, aux, nameind, a_id, numid, size, num ):
 		basename = 'aux_{0}'.format( nameind )
 		auxname = aux[nameind].name
 		if len( auxname ) == 0:
 			auxname = basename
 		
 		if numid:
-			name = '{0}[{1}]'.format( auxname, id )
+			name = '{0}[{1}]'.format( auxname, a_id )
 		else:
 			name = auxname
 			
-		type = 0
+		atype = 0
 		dumped = 0
 		siz = abs( size )
 		if num < 0:
-			type = -num
+			atype = -num
 			num = 0
 			i = 0
-			while getsvalue( data, i, type ) != -1:
+			while getsvalue( data, i, atype ) != -1:
 				num += 1
 				i += siz
-			dumped += type
+			dumped += atype
 		
-		self._printxml( 1, '<auxdata name="{0}" size="{1}" num="{2}" type="{3}">'.format( name, siz, num, type ) )
+		self._printxml( 1, '<auxdata name="{0}" size="{1}" num="{2}" type="{3}">'.format( name, siz, num, atype ) )
 		
 		if size < 0:
 			num *= -size
 			size = 1
 		
 		
-		vars = aux[nameind].vars
-		if not vars:
-			vars = [ varinf( 0x00, size, 0, '' ) ]
+		avars = aux[nameind].vars
+		if not avars:
+			avars = [ varinf( 0x00, size, 0, '' ) ]
 		
-		siz = structsize( vars )
+		siz = structsize( avars )
 		if siz != num * size:
-			vars[0].num = 1
-			siz = structsize( vars )
-			vars[0].num = num * size / siz
-			if vars[0].num * siz != size * num:
-				raise Exception( "{0} size {1}*{2} != {3}*{4}".format( name, siz, vars[0].num, size, num ) )
+			avars[0].num = 1
+			siz = structsize( avars )
+			avars[0].num = num * size / siz
+			if avars[0].num * siz != size * num:
+				raise Exception( "{0} size {1}*{2} != {3}*{4}".format( name, siz, avars[0].num, size, num ) )
 		
-		dumped += self._dumpobjdata( data, vars, 2 )
+		dumped += self._dumpobjdata( data, avars, 2 )
 		
 		self._printxml( 1, '</auxdata>' )
 		
 		return dumped
 	
-	def _dumpstrtable( self, data, id, num ):
+	def _dumpstrtable( self, data, a_id, num ):
 		dumped = num * 2
-		self._printxml( 1, '<stringtable id="{0}" num="{1}">'.format( id, num ) )
+		self._printxml( 1, '<stringtable id="{0}" num="{1}">'.format( a_id, num ) )
 		for i in range( num ):
 			dumped = getvalue( data, i * 2, 2 )
 			curr_str = getstr( data[ dumped: ] )

@@ -1,14 +1,13 @@
 from __future__ import print_function
 import xml.etree.ElementTree as ET
-import struct
 import re
 
 from .LocoFile import LocoFile
-from helper import uint8_list_to_raw_str, raw_str_to_uint8_list
-from helper import uint8_t, int8_to_uint8, pack, ROL
-from objects import *
+from .helper import uint8_list_to_raw_str, raw_str_to_uint8_list
+from .helper import uint8_t, int8_to_uint8, pack, ROL, structsize
+from .objects import objclasses, spriteflags
 from .sprite_png import readpng, getspriterow
-
+from .structs import varinf
 
 
 class LocoEncoder(LocoFile):
@@ -108,7 +107,7 @@ class LocoEncoder(LocoFile):
 				
 			elif cls.type == 'desc_cargo':
 				for c in chunk.findall( 'cargo' ):
-					num = int( c.attrib['num'] )
+					#num = int( c.attrib['num'] )
 					capacity = int( c.attrib['capacity'] )
 					raw.extend( pack( 'B', capacity ) )
 					for ct in c.findall( 'cargotype' ):
@@ -126,7 +125,7 @@ class LocoEncoder(LocoFile):
 				raw.extend( self._encode_desc_sounds( chunk ) )
 				
 			else:
-				die( "Unknown obj description: {0}".format( cls.type ) )
+				raise Exception( "Unknown obj description: {0}".format( cls.type ) )
 
 		return raw
 
@@ -135,13 +134,12 @@ class LocoEncoder(LocoFile):
 			raise Exception( "Can't encode flags with {0} bytes".format( size ) )
 		value = 0
 		for i in range( size * 8 ):
-			defname = None
 			if i < len( flags ):
 				name = flags[ i ]
 			else:
 				name = ""
 			if len( name ) == 0:
-				name = defname = 'bit_{0:X}'.format( i )
+				name = 'bit_{0:X}'.format( i )
 			#print name
 			state = 0
 			for b in bits:
@@ -151,9 +149,9 @@ class LocoEncoder(LocoFile):
 			value |= state << i
 		return value
 
-	def _encode_desc_objdata( self, chunk, vars ):
+	def _encode_desc_objdata( self, chunk, a_vars ):
 		data = []
-		for v in vars:
+		for v in a_vars:
 			fname = v.name
 			if len( fname ) == 0:
 				fname = 'field_{0:X}'.format( v.ofs )
@@ -210,7 +208,7 @@ class LocoEncoder(LocoFile):
 		if len( auxname ) == 0:
 			auxname = basename
 		
-		id = 0
+		a_id = 0
 		is_array = False
 		for c in chunk.findall( 'auxdata' ):
 			ok = False
@@ -218,30 +216,31 @@ class LocoEncoder(LocoFile):
 			s = re.search( '^{0}\\[(\d+)\\]$'.format( auxname ), a_name )
 			if s:
 				is_array = True
-				if int( s.group(1) ) == id:
+				if int( s.group(1) ) == a_id:
 					ok = True
-				id += 1
+				a_id += 1
 			elif auxname == a_name:
 				ok = True
 			if ok:
 				#size = int( c.attrib['size'] )
 				num = int( c.attrib['num'] )
-				type = int( c.attrib['type'] )
+				#type = int( c.attrib['type'] )
 				if size < 0:
 					num *= -size
 					size = 1
 				
-				vars = aux[nameind].vars
-				if not vars:
-					vars = [ varinf( 0x00, size, 0, '' ) ]
-				siz = structsize( vars )
+				aux_vars = aux[nameind].vars
+				if not aux_vars:
+					aux_vars = [ varinf( 0x00, size, 0, '' ) ]
+				siz = structsize( aux_vars )
 				if siz != num * size:
-					vars[0].num = 1
-					siz = structsize( vars )
-					vars[0].num = num * size / siz
-					if vars[0].num * siz != size * num:
-						raise Exception( "{0} size {1}*{2} != {3}*{4}".format( name, siz, vars[0].num, size, num ) )
-				data.extend( self._encode_desc_objdata( c, vars ) )
+					aux_vars[0].num = 1
+					siz = structsize( aux_vars )
+					aux_vars[0].num = num * size / siz
+					if aux_vars[0].num * siz != size * num:
+						name = ''
+						raise Exception( "{0} size {1}*{2} != {3}*{4}".format( name, siz, aux_vars[0].num, size, num ) )
+				data.extend( self._encode_desc_objdata( c, aux_vars ) )
 				if cls.type == 'desc_auxdatavar' and is_array:
 					data.append( 0xFF )
 		
@@ -250,14 +249,14 @@ class LocoEncoder(LocoFile):
 		#return map( lambda x: 0xFA, data )
 		return data
 		
-	def _encode_strtable( self, chunk, id, num_offset ):
+	def _encode_strtable( self, chunk, a_id, num_offset ):
 		data = []
 		for c in chunk.findall( 'stringtable' ):
-			if int( c.attrib['id'] ) == id:
+			if int( c.attrib['id'] ) == a_id:
 				num = int( c.attrib['num'] )
 				str_data = []
 				for s in c:
-					str_id = int( s.attrib['id'] )
+					#str_id = int( s.attrib['id'] )
 					data.extend( pack( '<H', num * 2 + len( str_data ) ) )
 					str_type = int( s.attrib['type'] )
 					str_text = s.text
@@ -274,12 +273,12 @@ class LocoEncoder(LocoFile):
 		num = len( chunk.findall( 'sprite' ) )
 		size = 0
 		spritedata = []
-		spritedataoffset = 8 + 16 * num
+		#spritedataoffset = 8 + 16 * num
 
 		ofs = 0
 		old = []
 		for c in chunk.findall( 'sprite' ):
-			id = c.attrib['id']
+			#id = c.attrib['id']
 			xofs = int( c.attrib['xofs'] )
 			yofs = int( c.attrib['yofs'] )
 			flags = self._encode_flags( c.findall( 'bit' ), spriteflags, 4 )

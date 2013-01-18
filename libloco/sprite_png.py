@@ -1,15 +1,12 @@
 from __future__ import print_function
 import png
-from helper import uint8_t, getvalue, pack
-
-from locopal import *
+from .helper import uint8_t, getvalue, pack
+from .locopal import locopalette, companycolours, MASKOUT
 
 bgcol = 255
 palettetype = 27
 
 def putspriterow( data, data_offset, flags, y, width ):
-	
-	offset = 0
 	row = [bgcol] * width
 	
 	if ( flags & 4 ) == 0: # not chunked
@@ -85,7 +82,7 @@ def getspriterow( row, flags ):
 def readpng( fname, flags ):
 	r = png.Reader( filename = fname )
 	data = []
-	( width, height, pixels, metadata ) = r.read()
+	( width, height, pixels, ) = r.read()
 	sprite_data = []
 	if flags & 4:
 		size = height * 2

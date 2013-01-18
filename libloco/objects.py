@@ -1,9 +1,5 @@
-import struct
-from .varinf import varinf
-from .objdesc import objdesc
-from .objclass import objclass
-from .auxdesc import auxdesc
-from .helper import *
+from .structs import auxdesc, objclass, objdesc, varinf
+from .helper import descnumspec, descnumif, descnumand, descnumuntil
 
 spriteflags = [
 	"hasdata", "", "chunked", "",

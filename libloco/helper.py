@@ -1,5 +1,4 @@
 import struct
-import os
 
 def ROR(x, n, bits = 32):
 	mask = (2L**n) - 1
@@ -10,15 +9,15 @@ def ROL(x, n, bits = 32):
 	return ROR(x, bits - n, bits)
 
 def die(error_message):
-    raise Exception(error_message)
+	raise Exception(error_message)
 
 def getstr( data ):
-	str = r''
+	s = r''
 	for x in data:
 		if x == '\x00':
 			break
-		str += x
-	return str
+		s += x
+	return s
 
 def xml_str( inp ):
 	inp = inp.replace( '&', '&amp;' )
@@ -74,38 +73,32 @@ def loopescape(j,num):
 
 def getnum( data, ofs, numdef ):
 	#print 'getnum( {0}, {1}, {2} )'.format( '{data}', ofs, numdef )
-	type = uint8_to_int8( numdef >> 24 )
+	ntype = uint8_to_int8( numdef >> 24 )
 	arg = uint8_to_int8( ( numdef & 0xFF0000 ) >> 16 )
 	num = uint16_to_int16( numdef & 0xFFFF )
 	#print 'type, arg, num: {0}, {1}, {2}'.format( type, arg, num )
 
-	if type == 0:
+	if ntype == 0:
 		return ( num, ofs )
-	elif type == 1:
+	elif ntype == 1:
 		if uint8_t( data[ ofs ] ) != 0xFF:
 			return ( 0xffffff, ofs )
 		ofs += 1
 		return ( -1, ofs )
-	elif type == 2:
+	elif ntype == 2:
 		num = uint8_t( data[ -num ] ) & arg
 		return ( num if num != 0 else -1, ofs )
-	elif type == 3:
+	elif ntype == 3:
 		return ( 0 if uint8_t( data[ -num ] ) != 0 else -1, ofs )
-	elif type == 4:
+	elif ntype == 4:
 		return ( calcdescnum[ num ]( data ), ofs )
-	elif type == -1:
+	elif ntype == -1:
 		if num < 0:
 			num = uint8_t( data[ -num ] )
 			return ( num if num != 0 else -1, ofs )
 
 	die( 'Invalid description count {0}'.format( type ) )
-	#print type, arg, num
 
-def makenum( value, numdef ):
-	type = uint8_to_int8( numdef >> 24 )
-	arg = uint8_to_int8( ( numdef & 0xFF0000 ) >> 16 )
-	num = uint16_to_int16( numdef & 0xFFFF )
-	return ( type, arg, num )
 
 def descnumuntil():
 	return ( 0x01000000 )
@@ -136,5 +129,5 @@ def encodevalue( raw, size ):
 def pack( f, d ):
 	return raw_str_to_uint8_list( struct.pack( f, d ) )
 	
-def structsize( vars ):
-	return reduce( lambda sum, v: sum + ( abs( v.size ) * v.num ), vars, 0 )
+def structsize( a_vars ):
+	return reduce( lambda t, v: t + ( abs( v.size ) * v.num ), a_vars, 0 )
