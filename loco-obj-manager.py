@@ -35,7 +35,6 @@ if __name__ == '__main__':
 						open( os.path.join( '.', filename ), 'wb' ).write( open( os.path.join( path, filename ), 'rb' ).read() )
 						print( '{2} class: 0x{0:02X} {3}'.format( *f.get_header() ) )
 						break
-					else:
-						continue
-				print( '{2} class: 0x{0:02X} {3}'.format( *f.get_header() ) )
+				else:
+					print( '{2} class: 0x{0:02X} {3}'.format( *f.get_header() ) )
 	pass
