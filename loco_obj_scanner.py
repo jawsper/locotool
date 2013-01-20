@@ -1,32 +1,32 @@
 #!/usr/bin/env python
+from __future__ import print_function
 
-import libloco.LocoDecoder
+from libloco.LocoDecoder import LocoDecoder
 
-import sys
 import os
+import argparse
 
 if __name__ == '__main__':
 	path = None
 	test = None
-	if len( sys.argv ) > 1:
-		if sys.argv[1][0:2] == '-t':
-			test = int( sys.argv[1][2:], 16 if sys.argv[1][3] == 'x' else 10 )
-			if len( sys.argv ) > 2 and os.path.isdir( sys.argv[2] ):
-				path = os.path.realpath( sys.argv[2] )
-			else:
-				path = os.path.realpath( '.' )
-		elif os.path.isdir( sys.argv[1] ):
-			path = os.path.realpath( sys.argv[1] )
-	else:
-		path = os.path.realpath( '.' )
-	if path != None:
-		for filename in os.listdir( path ):
+	parser = argparse.ArgumentParser( description='Loco obj scanner' )
+	parser.add_argument( 'path', nargs = '?', default = '.' )
+	parser.add_argument( '-t', '--type', type=int )
+	parser.add_argument( '--all', action="store_true" )
+	args = parser.parse_args()
+	
+	if os.path.isdir( args.path ):
+		path = os.path.realpath( args.path )
+		for filename in sorted( os.listdir( path ), cmp=lambda x,y: cmp( x.lower(), y.lower() ) ):
 			if filename.lower().endswith( '.dat' ):
-				f = libloco.LocoDecoder( os.path.join( path, filename ) )
-				if test:
-					if f.get_header()[0] == test:
+				f = LocoDecoder( os.path.join( path, filename ) )
+				if args.type:
+					if f.get_header()[0] == args.type:
 						open( os.path.join( '.', filename ), 'wb' ).write( open( os.path.join( path, filename ), 'rb' ).read() )
-						print( '{2} class: 0x{0:02X} {3}'.format( *f.get_header() ) )
-						break
+						print( '{2} class: {0:02} {3}'.format( *f.get_header() ) )
+						if not args.all:
+							break
 				else:
-					print( '{2} class: 0x{0:02X} {3}'.format( *f.get_header() ) )
+					print( '{2} class: {0:02} {3}'.format( *f.get_header() ) )
+	else:
+		print( 'Invalid path: {0}'.format( args.path ) )
