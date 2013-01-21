@@ -82,7 +82,10 @@ def getspriterow( row, flags ):
 def readpng( fname, flags ):
 	r = png.Reader( filename = fname )
 	data = []
-	( width, height, pixels, ) = r.read()
+	try:
+		( width, height, pixels, metadata ) = r.read()
+	except ValueError:
+		return ( [], 0, 0 )
 	sprite_data = []
 	if flags & 4:
 		size = height * 2
