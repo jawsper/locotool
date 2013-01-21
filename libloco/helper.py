@@ -99,6 +99,11 @@ def getnum( data, ofs, numdef ):
 
 	die( 'Invalid description count {0}'.format( type ) )
 
+def makenum( numdef ):
+	ntype = uint8_to_int8( numdef >> 24 )
+	arg = uint8_to_int8( ( numdef & 0xFF0000 ) >> 16 )
+	num = uint16_to_int16( numdef & 0xFFFF )
+	return ( ntype, arg, num )
 
 def descnumuntil():
 	return ( 0x01000000 )
