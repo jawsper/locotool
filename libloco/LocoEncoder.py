@@ -87,11 +87,19 @@ class LocoEncoder(LocoFile):
 
 			elif cls.type == 'desc_useobj':
 				for c in chunk.findall( 'useobject' ):
+					if cls.param[1] == c.attrib['desc']:
+						raw.extend( pack( '<I', int( c.attrib['class'] ) ) )
+						for i in range( 8 ):
+							raw.append( uint8_t( c.text[i] ) )
+						raw.extend( [0x00] * 4 )
+						break
 					if re.search( '^{0}(\\[\\d+\\])?$'.format( cls.param[1] ), c.attrib['desc'] ):
 						raw.extend( pack( '<I', int( c.attrib['class'] ) ) )
 						for i in range( 8 ):
 							raw.append( uint8_t( c.text[i] ) )
 						raw.extend( [0x00] * 4 )
+					( ntype, arg, num ) = makenum( cls.param[0] )
+					raw.append( 0xFF )
 
 			elif cls.type == 'desc_auxdata':
 				raw.extend( self._encode_auxdata( chunk, obj.aux, cls ) )
