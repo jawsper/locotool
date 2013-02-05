@@ -29,16 +29,15 @@ class Chunk:
 		indent = 1
 		obj = objclasses[ self._class ]
 		dumped = 0
-		if obj == 0:
-			die( 'Objclass 0x{0:02X} not implemented yet'.format( self._class ) )
+		
 		for cls in obj.desc:
-			if cls.type == 'desc_objdata':
+			if cls.type == 'desc_objdata': # params: -
 				dumped += self._dumpobjdata( self.data[ dumped: ], obj.vars, indent )
 			
-			elif cls.type == 'desc_lang':
+			elif cls.type == 'desc_lang': # params: langid
 				dumped += self._dumplang( self.data[ dumped: ], cls.param[0] ) 
 			
-			elif cls.type == 'desc_useobj':
+			elif cls.type == 'desc_useobj': # params: num*, type, classes...
 				j = 0
 				while True:
 					( num, dumped ) = getnum( self.data, dumped, cls.param[0] )
@@ -47,7 +46,7 @@ class Chunk:
 					dumped += self._dumpuseobj( self.data[ dumped: ], j, num, cls.param[1], cls.param[2:] )
 					j += 1
 			
-			elif cls.type == 'desc_auxdata':
+			elif cls.type == 'desc_auxdata': # params: nameind, numaux*, size, num*
 				( num,  dumped ) = getnum( self.data, dumped, cls.param[1] )
 				( num2, dumped ) = getnum( self.data, dumped, cls.param[3] )
 				num  = uint32_to_int32( num )
@@ -57,7 +56,7 @@ class Chunk:
 					dumped += self._dumpaux( self.data[ dumped: ], obj.aux, cls.param[0], j, num, cls.param[2], num2 )
 					j += 1
 			
-			elif cls.type == 'desc_auxdatafix':
+			elif cls.type == 'desc_auxdatafix': # params: nameind, numaux*, size, numsize
 				( num,  dumped ) = getnum( self.data, dumped, cls.param[1] )
 				j = 0
 				while not loopescape( j, num ):
@@ -66,27 +65,27 @@ class Chunk:
 					dumped += self._dumpaux( self.data[ dumped: ], obj.aux, cls.param[0], j, num, cls.param[2], num2 )
 					j += 1
 			
-			elif cls.type == 'desc_auxdatavar': # nameind numaux* size type
+			elif cls.type == 'desc_auxdatavar': # params: nameind, numaux*, size, type
 				( num, dumped ) = getnum( self.data, dumped, cls.param[1] )
 				j = 0
 				while not loopescape( j, num ):
 					dumped += self._dumpaux( self.data[ dumped: ], obj.aux, cls.param[0], j, num, cls.param[2], -cls.param[3] )
 					j += 1
 			
-			elif cls.type == 'desc_strtable':
+			elif cls.type == 'desc_strtable': # params: id, num*, ofs*
 				dumped += self._dumpstrtable( self.data[ dumped: ], cls.param[0], uint8_t( self.data[cls.param[1]] ) )
 			
-			elif cls.type == 'desc_cargo':
+			elif cls.type == 'desc_cargo': # params: num*
 				( num, dumped ) = getnum( self.data, dumped, cls.param[0] )
 				j = 0
 				while not loopescape( j, num ):
 					dumped += self._dumpcap( self.data[ dumped: ], j, num )
 					j += 1
 			
-			elif cls.type == 'desc_sprites':
+			elif cls.type == 'desc_sprites': # params: -
 				dumped += self._dumpsprites( self.data[ dumped: ] )
 			
-			elif cls.type == 'desc_sounds':
+			elif cls.type == 'desc_sounds': # params: -
 				dumped += self._dumpsounds( self.data[ dumped: ] )
 			
 			else:
@@ -160,25 +159,24 @@ class Chunk:
 	def _dumplang( self, data, num ):
 		ofs = 0
 		
-		language = struct.unpack( 'B', data[ ofs ] )[0]
-		ofs += 1
+		language = uint8_t( data[ ofs ] )
+		ofs += 1 # lang
 		while language != 0xFF:
 			lang_str = ''
-			while data[ ofs ] != '\x00':
+			while uint8_t( data[ ofs ] ) != 0x00:
 				lang_str += data[ ofs ]
-				ofs += 1
-			ofs += 1
+				ofs += 1 # char
+			ofs += 1 # 0
 			lang_str = xml_str( lang_str )
 			self._printxml( 1, '<description num="{0}" language="{1}">{2}</description>'.format( num, language, lang_str ) )
-			language = struct.unpack( 'B', data[ ofs ] )[0]
-			ofs += 1
+			language = uint8_t( data[ ofs ] )
+			ofs += 1 # lang
 		
 		return ofs
 		
 	# dump an object dependence (i.e. an outside object that this object depends on)
-	def _dumpuseobj( self, data, num, total, a_type, classes ):
-		#print '_dumpuseobj( {0}, {1}, {2}, {3} )'.format( num, total, type, classes )
-		typename = a_type
+	def _dumpuseobj( self, data, num, total, typename, classes ):
+		#print '_dumpuseobj( {0}, {1}, {2}, {3} )'.format( num, total, typename, classes )
 		if total > 1:
 			typename = '{0}[{1}]'.format( typename, num )
 		

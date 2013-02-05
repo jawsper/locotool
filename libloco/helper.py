@@ -38,11 +38,13 @@ def uint8_t( inp ):
 	return struct.unpack( 'B', inp )[0]
 
 def raw_str_to_uint8_list( raw ):
+	return map( lambda x: uint8_t( x ), raw )
 	data = []
 	for x in raw:
 		data.append( uint8_t( x ) )
 	return data
 def uint8_list_to_raw_str( lst ):
+	#return reduce( lambda x, y: x + struct.pack( 'B', y ), lst, r'' )
 	data = r''
 	for x in lst:
 		data += struct.pack( 'B', x )
@@ -71,20 +73,27 @@ calcdescnum = [ vehnumtrack, vehnumrackrail ]
 def loopescape(j,num):
 	return ( (num < 0) or ( (num == 0) and (j > 0) ) or ( (num > 0) and (j >= num) ) )
 
-def getnum( data, ofs, numdef ):
-	#print 'getnum( {0}, {1}, {2} )'.format( '{data}', ofs, numdef )
+def makenum( numdef ):
 	ntype = uint8_to_int8( numdef >> 24 )
 	arg = uint8_to_int8( ( numdef & 0xFF0000 ) >> 16 )
 	num = uint16_to_int16( numdef & 0xFFFF )
+	return ( ntype, arg, num )
+
+def getnum( data, ofs, numdef ):
+	#print 'getnum( {0}, {1}, {2} )'.format( '{data}', ofs, numdef )
+	try:
+		( ntype, arg, num ) = numdef
+	except TypeError:	
+		( ntype, arg, num ) = makenum( numdef )
 	#print 'type, arg, num: {0}, {1}, {2}'.format( type, arg, num )
 
 	if ntype == 0:
 		return ( num, ofs )
 	elif ntype == 1:
 		if uint8_t( data[ ofs ] ) != 0xFF:
-			return ( 0xffffff, ofs )
-		ofs += 1
-		return ( -1, ofs )
+			return ( 0xffffff, ofs ) # return big number to not break the loop
+		ofs += 1  # we just read a byte, so increment 1
+		return ( -1, ofs ) # return -1 to guarantee loop break
 	elif ntype == 2:
 		num = uint8_t( data[ -num ] ) & arg
 		return ( num if num != 0 else -1, ofs )
@@ -97,22 +106,21 @@ def getnum( data, ofs, numdef ):
 			num = uint8_t( data[ -num ] )
 			return ( num if num != 0 else -1, ofs )
 
-	die( 'Invalid description count {0}'.format( type ) )
+	die( 'Invalid description count {0}'.format( ntype ) )
 
-def makenum( numdef ):
-	ntype = uint8_to_int8( numdef >> 24 )
-	arg = uint8_to_int8( ( numdef & 0xFF0000 ) >> 16 )
-	num = uint16_to_int16( numdef & 0xFFFF )
-	return ( ntype, arg, num )
-
+# return [ ntype, arg, num ]
 def descnumuntil():
+	#return [ 0x01, 0x00, 0x0000 ]
 	return ( 0x01000000 )
-def descnumspec( x ):
-	return ( 0x04000000 | ( ( x ) & 0xffff ) )
-def descnumif(x):
-	return ( 0x03000000 | ( ( -x ) & 0xffff ) )
 def descnumand(x,y):
+	#return [ 0x02, y & 0xFF, ( -x ) * 0xFF ]
 	return ( 0x02000000 | ( ( ( y ) & 0xff ) << 16 ) | ( ( -x ) & 0xffff ) )
+def descnumif(x):
+	#return [ 0x03, 0x00, ( -x ) & 0xFFFF ]
+	return ( 0x03000000 | ( ( -x ) & 0xffff ) )
+def descnumspec( x ):
+	#return [ 0x04, 0x00, x & 0xFFFF ]
+	return ( 0x04000000 | ( ( x ) & 0xffff ) )
 
 
 def getsvalue( data, ofs, size ):

@@ -4,7 +4,7 @@ import re
 
 from .LocoFile import LocoFile
 from .helper import uint8_list_to_raw_str, raw_str_to_uint8_list
-from .helper import uint8_t, int8_to_uint8, pack, ROL, structsize
+from .helper import uint8_t, int8_to_uint8, pack, ROL, structsize, makenum
 from .objects import objclasses, spriteflags
 from .sprite_png import readpng, getspriterow
 from .structs import varinf
@@ -93,13 +93,21 @@ class LocoEncoder(LocoFile):
 							raw.append( uint8_t( c.text[i] ) )
 						raw.extend( [0x00] * 4 )
 						break
-					if re.search( '^{0}(\\[\\d+\\])?$'.format( cls.param[1] ), c.attrib['desc'] ):
+					m = re.search( '^{0}\\[(\\d+)\\]$'.format( cls.param[1] ), c.attrib['desc'] )
+					if m:
 						raw.extend( pack( '<I', int( c.attrib['class'] ) ) )
 						for i in range( 8 ):
 							raw.append( uint8_t( c.text[i] ) )
 						raw.extend( [0x00] * 4 )
-					( ntype, arg, num ) = makenum( cls.param[0] )
-					raw.append( 0xFF )
+						
+						#j = int( m.group(1) )
+						#from .helper import makenum, loopescape
+						#try:
+						#	( ntype, arg, num ) = cls.param[0]
+						#except TypeError:
+						#	( ntype, arg, num ) = makenum( cls.param[0] )
+						#if loopescape( j, num ):
+						#	raw.append( 0xFF )
 
 			elif cls.type == 'desc_auxdata':
 				raw.extend( self._encode_auxdata( chunk, obj.aux, cls ) )
