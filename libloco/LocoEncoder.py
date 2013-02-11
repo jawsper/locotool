@@ -86,6 +86,7 @@ class LocoEncoder(LocoFile):
 				raw.extend( self._encode_desc_lang( chunk, cls.param[0] ) )
 
 			elif cls.type == 'desc_useobj':
+				is_array = False
 				for c in chunk.findall( 'useobject' ):
 					if cls.param[1] == c.attrib['desc']:
 						raw.extend( pack( '<I', int( c.attrib['class'] ) ) )
@@ -95,19 +96,13 @@ class LocoEncoder(LocoFile):
 						break
 					m = re.search( '^{0}\\[(\\d+)\\]$'.format( cls.param[1] ), c.attrib['desc'] )
 					if m:
+						is_array = True
 						raw.extend( pack( '<I', int( c.attrib['class'] ) ) )
 						for i in range( 8 ):
 							raw.append( uint8_t( c.text[i] ) )
 						raw.extend( [0x00] * 4 )
-						
-						#j = int( m.group(1) )
-						#from .helper import makenum, loopescape
-						#try:
-						#	( ntype, arg, num ) = cls.param[0]
-						#except TypeError:
-						#	( ntype, arg, num ) = makenum( cls.param[0] )
-						#if loopescape( j, num ):
-						#	raw.append( 0xFF )
+				if is_array:
+					raw.append( 0xFF )
 
 			elif cls.type == 'desc_auxdata':
 				raw.extend( self._encode_auxdata( chunk, obj.aux, cls ) )
