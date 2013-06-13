@@ -94,13 +94,13 @@ class LocoEncoder(LocoFile):
 							raw.append( uint8_t( c.text[i] ) )
 						raw.extend( [0x00] * 4 )
 
-			elif cls.type == 'desc_auxdata':
+			elif cls.type == 'desc_auxdata': # param: nameind numaux* size num*
 				raw.extend( self._encode_auxdata( chunk, obj.aux, cls ) )
 				
-			elif cls.type == 'desc_auxdatafix':
+			elif cls.type == 'desc_auxdatafix': # param: nameind numaux* size numsize
 				raw.extend( self._encode_auxdata( chunk, obj.aux, cls ) )
 				
-			elif cls.type == 'desc_auxdatavar':
+			elif cls.type == 'desc_auxdatavar': # param: nameind numaux* size type
 				raw.extend( self._encode_auxdata( chunk, obj.aux, cls ) )
 			
 			elif cls.type == 'desc_strtable':
