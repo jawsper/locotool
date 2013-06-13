@@ -1,9 +1,5 @@
-import struct
-from .varinf import varinf
-from .objdesc import objdesc
-from .objclass import objclass
-from .auxdesc import auxdesc
-from .helper import *
+from .structs import auxdesc, objclass, objdesc, varinf
+from .helper import descnumspec, descnumif, descnumand, descnumuntil
 
 spriteflags = [
 	"hasdata", "", "chunked", "",
@@ -101,7 +97,7 @@ exhfxdesc = [
 	objdesc( 'desc_lang', [ 0 ] ),
 	objdesc( 'desc_auxdatavar', [ 0, 0, 2, 1 ] ),
 	objdesc( 'desc_auxdatavar', [ 1, 0, 2, 1 ] ),
-	objdesc( 'desc_useobj', [ 0xFFFFFFE2, 'soundeffect', 0x01, -1 ] ), # FFFF FFE2 == -0x1e
+	objdesc( 'desc_useobj', [ 0xFFFFFFE2, 'soundeffect', 0x01 ] ), # FFFF FFE2 == -0x1e
 	objdesc( 'desc_sprites' ),
 ]
 
@@ -873,8 +869,8 @@ regionvars = [
 regiondesc = [
 	objdesc( 'desc_objdata' ),
 	objdesc( 'desc_lang', [ 0 ] ),
-	objdesc( 'desc_useobj', [ 0xFFFFFFF8, 'cargo', 0x08, -1 ] ),
-	objdesc( 'desc_useobj', [ descnumuntil(), 'default', 0x100, -1 ] ),
+	objdesc( 'desc_useobj', [ [ -1, -1, -8 ], 'cargo', 0x08 ] ),
+	objdesc( 'desc_useobj', [ [ 1, 0, 0 ], 'default', 0x100 ] ),
 	objdesc( 'desc_sprites' ),
 ]
 
