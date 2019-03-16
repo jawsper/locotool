@@ -8,6 +8,9 @@ from .helper import structsize, xml_str, die, getnum, loopescape
 from .helper import uint32_to_int32, getstr
 from .helper import getvalue, getsvalue, uint8_t
 
+import sys
+PY2 = sys.version_info[0] < 3
+
 pos_struct = 0
 pos_desc = 3
 
@@ -164,7 +167,7 @@ class Chunk:
 		while language != 0xFF:
 			lang_str = ''
 			while uint8_t( data[ ofs ] ) != 0x00:
-				lang_str += data[ ofs ]
+				lang_str += chr(data[ ofs ]) if not PY2 else data[ofs]
 				ofs += 1 # char
 			ofs += 1 # 0
 			lang_str = xml_str( lang_str )

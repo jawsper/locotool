@@ -1,7 +1,9 @@
 import struct
+import sys
+PY2 = sys.version_info[0] < 3
 
 def ROR(x, n, bits = 32):
-	mask = (2L**n) - 1
+	mask = (2**n) - 1
 	mask_bits = x & mask
 	return (x >> n) | (mask_bits << (bits - n))
 
@@ -14,9 +16,9 @@ def die(error_message):
 def getstr( data ):
 	s = r''
 	for x in data:
-		if x == '\x00':
+		if x == '\x00' or x == 0:
 			break
-		s += x
+		s += chr(x) if not PY2 else x
 	return s
 
 def xml_str( inp ):
@@ -35,7 +37,9 @@ def uint32_to_int32( inp ):
 	return a_to_b( 'I', 'i', inp )
 
 def uint8_t( inp ):
-	return struct.unpack( 'B', inp )[0]
+	if PY2:
+		return struct.unpack( 'B', inp )[0]
+	return struct.unpack( 'B', struct.pack('B', inp) )[0]
 
 def raw_str_to_uint8_list( raw ):
 	return map( lambda x: uint8_t( x ), raw )
@@ -44,11 +48,7 @@ def raw_str_to_uint8_list( raw ):
 		data.append( uint8_t( x ) )
 	return data
 def uint8_list_to_raw_str( lst ):
-	#return reduce( lambda x, y: x + struct.pack( 'B', y ), lst, r'' )
-	data = r''
-	for x in lst:
-		data += struct.pack( 'B', x )
-	return data
+	return bytes(lst)
 
 def xml_hex_to_val( inp ):
 	return inp

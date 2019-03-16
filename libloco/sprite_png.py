@@ -1,7 +1,10 @@
 from __future__ import print_function
-import png
+from png import Reader, Writer
 from .helper import uint8_t, getvalue, pack
 from .locopal import locopalette, companycolours, MASKOUT
+
+import sys
+PY2 = sys.version_info[0] < 3
 
 bgcol = 255
 palettetype = 27
@@ -80,7 +83,7 @@ def getspriterow( row, flags ):
 	return data
 
 def readpng( fname, flags ):
-	r = png.Reader( filename = fname )
+	r = Reader( filename = fname )
 	data = []
 	try:
 		( width, height, pixels, metadata ) = r.read()
@@ -112,7 +115,8 @@ class PNGWriter:
 			if palettetype & 1:
 				for i in range( 12 ):
 					pal[ ccolind + i ] = MASKOUT
-		self.w = png.Writer( w, h, palette = pal, background = ( 0x70, ), gamma = 1.4 )
+		
+		self.w = Writer( w, h, palette = pal, background = ( 0x70, 0x70, 0x70 ) if not PY2 else (0x70,), gamma = 1.4 )
 	def close( self ):
 		self.fp.close()
 		self.fp = None

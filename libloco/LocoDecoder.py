@@ -2,8 +2,11 @@ from __future__ import print_function
 import struct
 from .LocoFile import LocoFile
 from .Chunk import Chunk
-from objects import objclassnames
-from helper import uint8_t, ROR
+from .objects import objclassnames
+from .helper import uint8_t, ROR
+
+import sys
+PY2 = sys.version_info[0] < 3
 
 class LocoDecoder(LocoFile):
 	xml = None
@@ -26,9 +29,9 @@ class LocoDecoder(LocoFile):
 		with open( self.filename, 'rb' ) as self.f:
 			
 			tmp = self.f.read( 4 )
-			self._class = struct.unpack( 'B', tmp[0] )[0]
+			self._class = tmp[0] if not PY2 else struct.unpack( 'B', tmp[0] )[0]
 			self._subclass = ( struct.unpack( '<I', tmp )[0] & 0xFFFFFF00 ) >> 8
-			self._name = self.f.read( 8 )
+			self._name = self.f.read( 8 ).decode('ascii')
 			self.f.read( 4 ) # skip checksum
 			
 			with open( 'j_{0}.xml'.format( self._name.rstrip() ), 'w' ) as self.xml:			
@@ -69,7 +72,7 @@ class LocoDecoder(LocoFile):
 		return True
 		
 	def chunk_rle_decode( self, length ):
-		chunk = r''
+		chunk = b''
 		while length > 0:
 			rle = self.read_int8()
 			run = abs( rle ) + 1
@@ -89,7 +92,7 @@ class LocoDecoder(LocoFile):
 	def chunk_decompress( self, length ):
 		rle = self.chunk_rle_decode( length )
 		#return None
-		chunk = r''
+		chunk = b''
 
 		chunklen = 0
 		rleofs = 0

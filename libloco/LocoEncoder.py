@@ -36,7 +36,7 @@ class LocoEncoder(LocoFile):
 		raw.append( ( _subclass >> 8 ) & 0xFF )
 		raw.append( ( _subclass >> 16 ) & 0xFF )
 		for i in range( 8 ):
-			raw.append( uint8_t( _name[i] ) )
+			raw.append( ord( _name[i] ) )
 		raw.extend( [ 0xFF ] * 4 ) # checksum gets calculated later
 
 		c = 0xF369A75B
@@ -91,7 +91,7 @@ class LocoEncoder(LocoFile):
 					if cls.param[1] == c.attrib['desc']:
 						raw.extend( pack( '<I', int( c.attrib['class'] ) ) )
 						for i in range( 8 ):
-							raw.append( uint8_t( c.text[i] ) )
+							raw.append( ord( c.text[i] ) )
 						raw.extend( [0x00] * 4 )
 						break
 					m = re.search( '^{0}\\[(\\d+)\\]$'.format( cls.param[1] ), c.attrib['desc'] )
@@ -99,7 +99,7 @@ class LocoEncoder(LocoFile):
 						is_array = True
 						raw.extend( pack( '<I', int( c.attrib['class'] ) ) )
 						for i in range( 8 ):
-							raw.append( uint8_t( c.text[i] ) )
+							raw.append( ord( c.text[i] ) )
 						raw.extend( [0x00] * 4 )
 				if is_array:
 					raw.append( 0xFF )
